@@ -21,4 +21,14 @@
   - `VITE_FIREBASE_APP_ID`
 
   Also enable Email/Password sign-in in the Firebase Console under Authentication.
+
+  ## Google Analytics setup
+
+  Add your GA4 measurement ID to `.env` as `VITE_GA_MEASUREMENT_ID`.
+
+  Example:
+
+  - `VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX`
+
+  The app will send SPA page views automatically once this value is present.
   

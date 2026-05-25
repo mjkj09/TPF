@@ -1,9 +1,12 @@
+import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import Header from './components/Header';
 import { AuthProvider } from './contexts/AuthContext';
+import { initGoogleAnalytics, trackPageView } from './lib/analytics';
 
 export default function Root() {
   const location = useLocation();
+  const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
 
   const getCurrentView = () => {
     if (location.pathname === '/') return 'home';
@@ -15,6 +18,14 @@ export default function Root() {
     if (location.pathname.startsWith('/product/')) return 'product';
     return 'home';
   };
+
+  useEffect(() => {
+    initGoogleAnalytics(measurementId);
+  }, [measurementId]);
+
+  useEffect(() => {
+    trackPageView(measurementId, `${location.pathname}${location.search}`);
+  }, [location.pathname, location.search, measurementId]);
 
   return (
     <AuthProvider>
