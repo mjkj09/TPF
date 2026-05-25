@@ -1,16 +1,33 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  ReactNode,
+} from 'react';
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+  updateProfile,
+  type User as FirebaseUser,
+} from 'firebase/auth';
+import { firebaseAuth } from '../lib/firebase';
 
 interface User {
   id: string;
   email: string;
   name: string;
+  createdAt: string | null;
 }
 
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
   register: (email: string, password: string, name: string) => Promise<boolean>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -19,35 +36,37 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
-  // Load user from localStorage on mount
+  const mapFirebaseUser = (firebaseUser: FirebaseUser): User => ({
+    id: firebaseUser.uid,
+    email: firebaseUser.email ?? '',
+    name: firebaseUser.displayName ?? firebaseUser.email?.split('@')[0] ?? 'Użytkownik',
+    createdAt: firebaseUser.metadata.creationTime ?? null,
+  });
+
   useEffect(() => {
-    const storedUser = localStorage.getItem('legoTrackerUser');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    if (!firebaseAuth) {
+      return;
     }
+
+    const unsubscribe = onAuthStateChanged(firebaseAuth, (firebaseUser) => {
+      setUser(firebaseUser ? mapFirebaseUser(firebaseUser) : null);
+    });
+
+    return unsubscribe;
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Mock login - check if user exists in localStorage
-    const usersData = localStorage.getItem('legoTrackerUsers');
-    const users = usersData ? JSON.parse(usersData) : [];
-
-    const foundUser = users.find(
-      (u: any) => u.email === email && u.password === password
-    );
-
-    if (foundUser) {
-      const userData = {
-        id: foundUser.id,
-        email: foundUser.email,
-        name: foundUser.name,
-      };
-      setUser(userData);
-      localStorage.setItem('legoTrackerUser', JSON.stringify(userData));
-      return true;
+    if (!firebaseAuth) {
+      return false;
     }
 
-    return false;
+    try {
+      const credential = await signInWithEmailAndPassword(firebaseAuth, email, password);
+      setUser(mapFirebaseUser(credential.user));
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   const register = async (
@@ -55,54 +74,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     password: string,
     name: string
   ): Promise<boolean> => {
-    // Mock register - save to localStorage
-    const usersData = localStorage.getItem('legoTrackerUsers');
-    const users = usersData ? JSON.parse(usersData) : [];
-
-    // Check if user already exists
-    if (users.some((u: any) => u.email === email)) {
+    if (!firebaseAuth) {
       return false;
     }
 
-    const newUser = {
-      id: Date.now().toString(),
-      email,
-      password,
-      name,
-    };
+    try {
+      const credential = await createUserWithEmailAndPassword(
+        firebaseAuth,
+        email,
+        password
+      );
 
-    users.push(newUser);
-    localStorage.setItem('legoTrackerUsers', JSON.stringify(users));
+      await updateProfile(credential.user, { displayName: name });
 
-    // Auto-login after registration
-    const userData = {
-      id: newUser.id,
-      email: newUser.email,
-      name: newUser.name,
-    };
-    setUser(userData);
-    localStorage.setItem('legoTrackerUser', JSON.stringify(userData));
+      setUser({
+        id: credential.user.uid,
+        email: credential.user.email ?? email,
+        name,
+        createdAt: credential.user.metadata.creationTime ?? null,
+      });
 
-    return true;
+      return true;
+    } catch {
+      return false;
+    }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('legoTrackerUser');
+  const logout = async () => {
+    if (!firebaseAuth) {
+      setUser(null);
+      return;
+    }
+
+    await signOut(firebaseAuth);
   };
+
+  const value = useMemo(
+    () => ({
+      user,
+      login,
+      register,
+      logout,
+      isAuthenticated: !!user,
+    }),
+    [user]
+  );
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        register,
-        logout,
-        isAuthenticated: !!user,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
   );
 }
 

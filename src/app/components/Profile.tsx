@@ -1,13 +1,47 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { User, Mail, Bell, Shield, CreditCard, MapPin, Save } from 'lucide-react';
 import * as Switch from '@radix-ui/react-switch';
 import * as Tabs from '@radix-ui/react-tabs';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Profile() {
+  const { user } = useAuth();
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [priceAlerts, setPriceAlerts] = useState(true);
   const [weeklyDigest, setWeeklyDigest] = useState(false);
   const [newArrivals, setNewArrivals] = useState(true);
+
+  const displayName = user?.name ?? 'Użytkownik';
+  const displayEmail = user?.email ?? '';
+  const displayInitials = useMemo(() => {
+    return displayName
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join('');
+  }, [displayName]);
+
+  const signedUpLabel = useMemo(() => {
+    if (!user?.createdAt) {
+      return 'Członek od niedawna';
+    }
+
+    const createdAt = new Date(user.createdAt);
+
+    if (Number.isNaN(createdAt.getTime())) {
+      return 'Członek od niedawna';
+    }
+
+    return `Członek od ${createdAt.toLocaleDateString('pl-PL', {
+      month: 'long',
+      year: 'numeric',
+    })}`;
+  }, [user?.createdAt]);
+
+  const nameParts = displayName.split(' ');
+  const firstName = nameParts[0] ?? '';
+  const lastName = nameParts.slice(1).join(' ');
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -56,11 +90,11 @@ export default function Profile() {
                 {/* Avatar Section */}
                 <div className="flex items-center gap-6 pb-6 border-b">
                   <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-3xl">
-                    JK
+                    {displayInitials || 'U'}
                   </div>
                   <div>
-                    <h3 className="text-gray-900 mb-1">Jan Kowalski</h3>
-                    <p className="text-sm text-gray-500 mb-3">Członek od marca 2024</p>
+                    <h3 className="text-gray-900 mb-1">{displayName}</h3>
+                    <p className="text-sm text-gray-500 mb-3">{signedUpLabel}</p>
                     <button className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm transition-colors">
                       Zmień zdjęcie
                     </button>
@@ -76,7 +110,8 @@ export default function Profile() {
                     </label>
                     <input
                       type="text"
-                      defaultValue="Jan"
+                      value={firstName}
+                      readOnly
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500"
                     />
                   </div>
@@ -88,7 +123,8 @@ export default function Profile() {
                     </label>
                     <input
                       type="text"
-                      defaultValue="Kowalski"
+                      value={lastName}
+                      readOnly
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500"
                     />
                   </div>
@@ -100,7 +136,8 @@ export default function Profile() {
                     </label>
                     <input
                       type="email"
-                      defaultValue="jan.kowalski@example.com"
+                      value={displayEmail}
+                      readOnly
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500"
                     />
                   </div>
