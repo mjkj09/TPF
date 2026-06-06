@@ -35,9 +35,9 @@ export default function Header({ currentView }: HeaderProps) {
 
           <nav className="hidden md:flex items-center gap-4 ml-auto">
             <Link
-              to="/"
+              to="/search"
               className={`px-4 py-2 rounded-lg transition-colors ${
-                currentView === 'home'
+                currentView === 'search'
                   ? 'bg-blue-500 text-white'
                   : 'text-gray-700 hover:bg-gray-100'
               }`}
@@ -127,10 +127,10 @@ export default function Header({ currentView }: HeaderProps) {
           <nav className="md:hidden py-4 border-t">
             <div className="flex flex-col gap-2">
               <Link
-                to="/"
+                to="/search"
                 onClick={() => setMobileMenuOpen(false)}
                 className={`px-4 py-3 rounded-lg transition-colors text-left ${
-                  currentView === 'home'
+                  currentView === 'search'
                     ? 'bg-blue-500 text-white'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
