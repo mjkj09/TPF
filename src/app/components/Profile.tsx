@@ -57,6 +57,7 @@ export default function Profile() {
   const [cvv, setCvv] = useState('');
   const [cardholderName, setCardholderName] = useState('');
   const [setAsDefault, setSetAsDefault] = useState(false);
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
 
   const resetPaymentForm = () => {
     setCardNumber('');
@@ -475,16 +476,39 @@ export default function Profile() {
                 </div>
 
                 {/* Two-Factor Auth */}
-                <div>
-                  <h3 className="text-gray-900 mb-2">Uwierzytelnianie dwuskładnikowe (2FA)</h3>
-                  <p className="text-sm text-gray-600 mb-4">Dodaj dodatkową warstwę zabezpieczeń do swojego konta</p>
-                  <button className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
-                    Włącz 2FA
-                  </button>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-gray-900 mb-2">Uwierzytelnianie dwuskładnikowe (2FA)</h3>
+                    <p className="text-sm text-gray-600">
+                      Dodaj dodatkową warstwę zabezpieczeń do swojego konta
+                    </p>
+                  </div>
+                  <Switch.Root
+                    checked={twoFactorEnabled}
+                    onCheckedChange={(checked) => {
+                      setTwoFactorEnabled(checked);
+                      if (checked) {
+                        toast.success('Aktywowano 2FA');
+                      }
+                    }}
+                    className={`relative w-11 h-6 rounded-full transition-colors cursor-pointer ${
+                      twoFactorEnabled ? 'bg-blue-500' : 'bg-gray-300'
+                    }`}
+                  >
+                    <Switch.Thumb
+                      className={`block w-5 h-5 bg-white rounded-full transition-transform ${
+                        twoFactorEnabled ? 'translate-x-5' : 'translate-x-1'
+                      }`}
+                    />
+                  </Switch.Root>
                 </div>
 
                 <div className="flex justify-end pt-4">
-                  <button className="flex items-center gap-2 px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors">
+                  <button
+                    type="button"
+                    onClick={() => toast.success('Zaktualizowano')}
+                    className="flex items-center gap-2 px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+                  >
                     <Save className="w-4 h-4" />
                     Zaktualizuj hasło
                   </button>
