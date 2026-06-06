@@ -1,71 +1,15 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { Search, TrendingDown } from 'lucide-react';
+import { mockProducts } from '@/app/data/mockProducts';
+import { getMockImage } from '@/app/data/getMockImage';
 
 const categories = ['Technic', 'Star Wars', 'City', 'Icons', 'Creator', 'Friends'];
 
-const hotDeals = [
-  {
-    id: 1,
-    name: 'Nissan Skyline GT-R',
-    number: '42210',
-    image: 'https://images.unsplash.com/photo-1768029630578-c9e70bccac90?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600&q=80',
-    oldPrice: 1899,
-    newPrice: 1499,
-    discount: 21,
-    series: 'Technic'
-  },
-  {
-    id: 2,
-    name: 'Millennium Falcon',
-    number: '75192',
-    image: 'https://images.unsplash.com/photo-1616646131606-473894f0fed9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600&q=80',
-    oldPrice: 3999,
-    newPrice: 3199,
-    discount: 20,
-    series: 'Star Wars'
-  },
-  {
-    id: 3,
-    name: 'Police Station',
-    number: '60316',
-    image: 'https://images.unsplash.com/photo-1759663176274-6d3fa700b87a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600&q=80',
-    oldPrice: 899,
-    newPrice: 649,
-    discount: 28,
-    series: 'City'
-  },
-  {
-    id: 4,
-    name: 'Taj Mahal',
-    number: '21056',
-    image: 'https://images.unsplash.com/photo-1776212642413-82b859d7ac71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600&q=80',
-    oldPrice: 499,
-    newPrice: 379,
-    discount: 24,
-    series: 'Icons'
-  },
-  {
-    id: 5,
-    name: 'Porsche 911 RSR',
-    number: '42160',
-    image: 'https://images.unsplash.com/photo-1741745880109-7c1744ca0ac2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600&q=80',
-    oldPrice: 1599,
-    newPrice: 1199,
-    discount: 25,
-    series: 'Technic'
-  },
-  {
-    id: 6,
-    name: 'AT-AT Walker',
-    number: '75313',
-    image: 'https://images.unsplash.com/photo-1518457032933-2da6b92f088e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600&q=80',
-    oldPrice: 2999,
-    newPrice: 2399,
-    discount: 20,
-    series: 'Star Wars'
-  }
-];
+const hotDeals = mockProducts.slice(0, 6).map((product) => ({
+  ...product,
+  discount: Math.round((1 - product.price / product.oldPrice) * 100),
+}));
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -130,9 +74,9 @@ export default function HomePage() {
             >
               <div className="relative">
                 <img
-                  src={deal.image}
+                  src={getMockImage(deal.image)}
                   alt={deal.name}
-                  className="w-full h-48 object-cover"
+                  className="w-full h-48 object-contain bg-gray-50 p-4"
                 />
                 <div className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full">
                   -{deal.discount}%
@@ -146,7 +90,7 @@ export default function HomePage() {
 
                 <div className="flex items-end gap-3">
                   <span className="text-sm text-gray-400 line-through">{deal.oldPrice} zł</span>
-                  <span className="text-2xl text-red-600">{deal.newPrice} zł</span>
+                  <span className="text-2xl text-red-600">{deal.price} zł</span>
                 </div>
               </div>
             </Link>

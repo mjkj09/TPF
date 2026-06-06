@@ -2,6 +2,8 @@ import { Link, useParams } from 'react-router';
 import { Heart, Bell, ChevronLeft, X, Mail, Zap, Check } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useState, useEffect, useRef } from 'react';
+import { getMockProductById, mockProducts } from '@/app/data/mockProducts';
+import { getMockGallery } from '@/app/data/getMockImage';
 
 const priceHistory = [
   { date: '10.2025', price: 1699 },
@@ -21,16 +23,16 @@ const stores = [
   { id: 5, name: 'Euro RTV AGD', logo: '🏬', price: 1699, availability: 'Ostatnie sztuki', stock: 'Wysyłka 24h' }
 ];
 
-const images = [
-  'https://www.lego.com/cdn/cs/set/assets/blt8573adf4897f7bcc/42210_boxprod_v39.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5',
-  'https://images.unsplash.com/photo-1741745880109-7c1744ca0ac2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800&q=80',
-  'https://images.unsplash.com/photo-1621453420564-04315be63900?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800&q=80'
-];
-
-const CURRENT_PRICE = 1499;
-
 export default function ProductDetail() {
   const { id } = useParams();
+  const product = getMockProductById(Number(id)) ?? mockProducts[0];
+  const images = getMockGallery(product.gallery ?? [product.image]);
+  const CURRENT_PRICE = product.price;
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  useEffect(() => {
+    setSelectedImageIndex(0);
+  }, [id]);
 
   // --- Modal state ---
   const [modalOpen, setModalOpen] = useState(false);
@@ -98,19 +100,29 @@ export default function ProductDetail() {
         <div className="grid md:grid-cols-2 gap-8 mb-8">
           {/* Image Gallery */}
           <div>
-            <img
-              src={images[0]}
-              alt="Nissan Skyline GT-R"
-              className="w-full rounded-lg shadow-md mb-4"
-            />
+            <div className="relative aspect-square w-full mb-4 rounded-lg shadow-md bg-gray-50 overflow-hidden">
+              <img
+                src={images[selectedImageIndex]}
+                alt={product.name}
+                className="absolute inset-0 w-full h-full object-contain p-4"
+              />
+            </div>
             <div className="grid grid-cols-3 gap-3">
               {images.map((img, idx) => (
-                <img
+                <button
                   key={idx}
-                  src={img}
-                  alt={`View ${idx + 1}`}
-                  className="w-full h-24 object-cover rounded-md cursor-pointer hover:opacity-75 transition-opacity"
-                />
+                  type="button"
+                  onClick={() => setSelectedImageIndex(idx)}
+                  className={`relative aspect-square w-full rounded-md overflow-hidden bg-gray-50 cursor-pointer transition-opacity hover:opacity-75 ${
+                    selectedImageIndex === idx ? 'ring-2 ring-blue-500' : ''
+                  }`}
+                >
+                  <img
+                    src={img}
+                    alt={`View ${idx + 1}`}
+                    className="absolute inset-0 w-full h-full object-contain p-2"
+                  />
+                </button>
               ))}
             </div>
           </div>
@@ -118,22 +130,22 @@ export default function ProductDetail() {
           {/* Product Info */}
           <div>
             <div className="bg-white rounded-lg p-6 shadow-sm">
-              <div className="text-sm text-gray-500 mb-2">Technic</div>
-              <h1 className="text-3xl text-gray-900 mb-2">Nissan Skyline GT-R</h1>
-              <div className="text-gray-600 mb-6">Numer zestawu: <span className="text-gray-900">#42210</span></div>
+              <div className="text-sm text-gray-500 mb-2">{product.series}</div>
+              <h1 className="text-3xl text-gray-900 mb-2">{product.name}</h1>
+              <div className="text-gray-600 mb-6">Numer zestawu: <span className="text-gray-900">#{product.number}</span></div>
 
               <div className="grid grid-cols-2 gap-4 mb-6 pb-6 border-b">
                 <div>
                   <div className="text-sm text-gray-500">Grupa wiekowa</div>
-                  <div className="text-gray-900">18+</div>
+                  <div className="text-gray-900">{product.ageRange}</div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">Liczba elementów</div>
-                  <div className="text-gray-900">1,853 szt.</div>
+                  <div className="text-gray-900">{product.pieces.toLocaleString('pl-PL')} szt.</div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">Status</div>
-                  <div className="text-green-600">Dostępny</div>
+                  <div className="text-green-600">{product.availability}</div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">Data premiery</div>

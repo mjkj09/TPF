@@ -1,13 +1,14 @@
 import { Link } from 'react-router';
 import { ChevronLeft, Bell, TrendingDown, TrendingUp, Minus, ExternalLink } from 'lucide-react';
 import * as Switch from '@radix-ui/react-switch';
+import { getMockProductById } from '@/app/data/mockProducts';
+import { getMockImage } from '@/app/data/getMockImage';
 
 const watchedSets = [
   {
     id: 1,
     name: 'Nissan Skyline GT-R',
     number: '42210',
-    image: 'https://images.unsplash.com/photo-1768029630578-c9e70bccac90?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
     currentPrice: 1499,
     alertThreshold: 1400,
     priceChange: -21,
@@ -21,7 +22,6 @@ const watchedSets = [
     id: 2,
     name: 'Millennium Falcon',
     number: '75192',
-    image: 'https://images.unsplash.com/photo-1616646131606-473894f0fed9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
     currentPrice: 3199,
     alertThreshold: 2999,
     priceChange: -20,
@@ -35,7 +35,6 @@ const watchedSets = [
     id: 3,
     name: 'Taj Mahal',
     number: '21056',
-    image: 'https://images.unsplash.com/photo-1776212642413-82b859d7ac71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
     currentPrice: 379,
     alertThreshold: 350,
     priceChange: -24,
@@ -49,7 +48,6 @@ const watchedSets = [
     id: 4,
     name: 'Police Station',
     number: '60316',
-    image: 'https://images.unsplash.com/photo-1759663176274-6d3fa700b87a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
     currentPrice: 649,
     alertThreshold: 600,
     priceChange: 0,
@@ -63,7 +61,6 @@ const watchedSets = [
     id: 5,
     name: 'Porsche 911 RSR',
     number: '42160',
-    image: 'https://images.unsplash.com/photo-1741745880109-7c1744ca0ac2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400&q=80',
     currentPrice: 1199,
     alertThreshold: 1100,
     priceChange: -25,
@@ -131,7 +128,7 @@ export default function Watchlist() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
                         <img
-                          src={set.image}
+                          src={getMockImage(getMockProductById(set.id)?.image ?? 'placeholder.svg')}
                           alt={set.name}
                           className="w-20 h-16 object-cover rounded"
                         />
@@ -225,7 +222,7 @@ export default function Watchlist() {
             <div key={set.id} className="bg-white rounded-lg shadow-sm p-4">
               <div className="flex gap-4 mb-4">
                 <img
-                  src={set.image}
+                  src={getMockImage(getMockProductById(set.id)?.image ?? 'placeholder.svg')}
                   alt={set.name}
                   className="w-24 h-20 object-cover rounded"
                 />
