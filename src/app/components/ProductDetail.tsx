@@ -16,6 +16,8 @@ const priceHistory = [
   { date: '04.2026', price: 1499 }
 ];
 
+const STORE_URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+
 const stores = [
   { id: 1, name: 'LEGO.com', logo: 'LEGO.png', price: 1499, availability: 'Dostępny', stock: 'Wysyłka 24h' },
   { id: 2, name: 'Allegro', logo: 'ALLEGRO.png', price: 1549, availability: 'Dostępny', stock: 'Wysyłka 2-3 dni' },
@@ -282,15 +284,18 @@ export default function ProductDetail() {
                       </div>
                     </div>
 
-                    <button
-                      className={`px-6 py-2 text-white rounded-lg transition-colors whitespace-nowrap ${
+                    <a
+                      href={STORE_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`inline-flex items-center justify-center px-6 py-2 text-white rounded-lg transition-colors whitespace-nowrap ${
                         isBestPrice
                           ? 'bg-green-600 hover:bg-green-700'
                           : 'bg-blue-500 hover:bg-blue-600'
                       }`}
                     >
                       Idź do sklepu
-                    </button>
+                    </a>
                   </div>
                 </div>
               );
@@ -337,15 +342,18 @@ export default function ProductDetail() {
                     </div>
                   </div>
 
-                  <button
-                    className={`w-full px-6 py-3 text-white rounded-lg transition-colors ${
+                  <a
+                    href={STORE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`flex items-center justify-center w-full px-6 py-3 text-white rounded-lg transition-colors ${
                       isBestPrice
                         ? 'bg-green-600 hover:bg-green-700'
                         : 'bg-blue-500 hover:bg-blue-600'
                     }`}
                   >
                     Idź do sklepu
-                  </button>
+                  </a>
                 </div>
               );
             })}
