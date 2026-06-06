@@ -1,8 +1,15 @@
 import { useMemo, useState } from 'react';
-import { User, Mail, Bell, Shield, CreditCard, MapPin, Save } from 'lucide-react';
+import { User, Mail, Bell, Shield, CreditCard, MapPin, Save, CalendarDays, Sparkles } from 'lucide-react';
 import * as Switch from '@radix-ui/react-switch';
 import * as Tabs from '@radix-ui/react-tabs';
 import { useAuth } from '../contexts/AuthContext';
+
+const billingHistory = [
+  { name: 'Nissan Skyline GT-R', number: '42210', date: '15 marca 2026', price: 1499 },
+  { name: 'Millennium Falcon', number: '75192', date: '28 lutego 2026', price: 3199 },
+  { name: 'Police Station', number: '60316', date: '12 lutego 2026', price: 649 },
+  { name: 'Porsche 911 RSR', number: '42096', date: '3 stycznia 2026', price: 1199 },
+];
 
 export default function Profile() {
   const { user } = useAuth();
@@ -193,7 +200,7 @@ export default function Profile() {
                   <Switch.Root
                     checked={emailNotifications}
                     onCheckedChange={setEmailNotifications}
-                    className={`relative w-11 h-6 rounded-full transition-colors ${
+                    className={`relative w-11 h-6 rounded-full transition-colors cursor-pointer ${
                       emailNotifications ? 'bg-blue-500' : 'bg-gray-300'
                     }`}
                   >
@@ -205,70 +212,102 @@ export default function Profile() {
                   </Switch.Root>
                 </div>
 
-                {/* Price Alerts */}
-                <div className="flex items-center justify-between py-4 border-b">
-                  <div>
-                    <div className="flex items-center gap-2 text-gray-900 mb-1">
-                      <Bell className="w-5 h-5" />
-                      Alerty cenowe
+                <div
+                  className={`space-y-0 transition-opacity ${!emailNotifications ? 'opacity-50' : ''}`}
+                  aria-disabled={!emailNotifications}
+                >
+                  {/* Price Alerts */}
+                  <div className="flex items-center justify-between py-4 border-b">
+                    <div>
+                      <div
+                        className={`flex items-center gap-2 mb-1 ${
+                          emailNotifications ? 'text-gray-900' : 'text-gray-400'
+                        }`}
+                      >
+                        <Bell className="w-5 h-5" />
+                        Alerty cenowe
+                      </div>
+                      <p className={`text-sm ${emailNotifications ? 'text-gray-600' : 'text-gray-400'}`}>
+                        Powiadomienia gdy cena spadnie poniżej progu
+                      </p>
                     </div>
-                    <p className="text-sm text-gray-600">Powiadomienia gdy cena spadnie poniżej progu</p>
+                    <Switch.Root
+                      checked={priceAlerts}
+                      onCheckedChange={setPriceAlerts}
+                      disabled={!emailNotifications}
+                      className={`relative w-11 h-6 rounded-full transition-colors ${
+                        emailNotifications ? 'cursor-pointer' : 'cursor-not-allowed'
+                      } ${priceAlerts && emailNotifications ? 'bg-blue-500' : 'bg-gray-300'}`}
+                    >
+                      <Switch.Thumb
+                        className={`block w-5 h-5 bg-white rounded-full transition-transform ${
+                          priceAlerts ? 'translate-x-5' : 'translate-x-1'
+                        }`}
+                      />
+                    </Switch.Root>
                   </div>
-                  <Switch.Root
-                    checked={priceAlerts}
-                    onCheckedChange={setPriceAlerts}
-                    className={`relative w-11 h-6 rounded-full transition-colors ${
-                      priceAlerts ? 'bg-blue-500' : 'bg-gray-300'
-                    }`}
-                  >
-                    <Switch.Thumb
-                      className={`block w-5 h-5 bg-white rounded-full transition-transform ${
-                        priceAlerts ? 'translate-x-5' : 'translate-x-1'
-                      }`}
-                    />
-                  </Switch.Root>
-                </div>
 
-                {/* Weekly Digest */}
-                <div className="flex items-center justify-between py-4 border-b">
-                  <div>
-                    <div className="text-gray-900 mb-1">Cotygodniowe podsumowanie</div>
-                    <p className="text-sm text-gray-600">Otrzymuj zestawienie najlepszych ofert co tydzień</p>
+                  {/* Weekly Digest */}
+                  <div className="flex items-center justify-between py-4 border-b">
+                    <div>
+                      <div
+                        className={`flex items-center gap-2 mb-1 ${
+                          emailNotifications ? 'text-gray-900' : 'text-gray-400'
+                        }`}
+                      >
+                        <CalendarDays className="w-5 h-5" />
+                        Cotygodniowe podsumowanie
+                      </div>
+                      <p className={`text-sm ${emailNotifications ? 'text-gray-600' : 'text-gray-400'}`}>
+                        Otrzymuj zestawienie najlepszych ofert co tydzień
+                      </p>
+                    </div>
+                    <Switch.Root
+                      checked={weeklyDigest}
+                      onCheckedChange={setWeeklyDigest}
+                      disabled={!emailNotifications}
+                      className={`relative w-11 h-6 rounded-full transition-colors ${
+                        emailNotifications ? 'cursor-pointer' : 'cursor-not-allowed'
+                      } ${weeklyDigest && emailNotifications ? 'bg-blue-500' : 'bg-gray-300'}`}
+                    >
+                      <Switch.Thumb
+                        className={`block w-5 h-5 bg-white rounded-full transition-transform ${
+                          weeklyDigest ? 'translate-x-5' : 'translate-x-1'
+                        }`}
+                      />
+                    </Switch.Root>
                   </div>
-                  <Switch.Root
-                    checked={weeklyDigest}
-                    onCheckedChange={setWeeklyDigest}
-                    className={`relative w-11 h-6 rounded-full transition-colors ${
-                      weeklyDigest ? 'bg-blue-500' : 'bg-gray-300'
-                    }`}
-                  >
-                    <Switch.Thumb
-                      className={`block w-5 h-5 bg-white rounded-full transition-transform ${
-                        weeklyDigest ? 'translate-x-5' : 'translate-x-1'
-                      }`}
-                    />
-                  </Switch.Root>
-                </div>
 
-                {/* New Arrivals */}
-                <div className="flex items-center justify-between py-4">
-                  <div>
-                    <div className="text-gray-900 mb-1">Nowe premiery</div>
-                    <p className="text-sm text-gray-600">Powiadomienia o nowych zestawach LEGO</p>
+                  {/* New Arrivals */}
+                  <div className="flex items-center justify-between py-4">
+                    <div>
+                      <div
+                        className={`flex items-center gap-2 mb-1 ${
+                          emailNotifications ? 'text-gray-900' : 'text-gray-400'
+                        }`}
+                      >
+                        <Sparkles className="w-5 h-5" />
+                        Nowe premiery
+                      </div>
+                      <p className={`text-sm ${emailNotifications ? 'text-gray-600' : 'text-gray-400'}`}>
+                        Powiadomienia o nowych zestawach LEGO
+                      </p>
+                    </div>
+                    <Switch.Root
+                      checked={newArrivals}
+                      onCheckedChange={setNewArrivals}
+                      disabled={!emailNotifications}
+                      className={`relative w-11 h-6 rounded-full transition-colors ${
+                        emailNotifications ? 'cursor-pointer' : 'cursor-not-allowed'
+                      } ${newArrivals && emailNotifications ? 'bg-blue-500' : 'bg-gray-300'}`}
+                    >
+                      <Switch.Thumb
+                        className={`block w-5 h-5 bg-white rounded-full transition-transform ${
+                          newArrivals ? 'translate-x-5' : 'translate-x-1'
+                        }`}
+                      />
+                    </Switch.Root>
                   </div>
-                  <Switch.Root
-                    checked={newArrivals}
-                    onCheckedChange={setNewArrivals}
-                    className={`relative w-11 h-6 rounded-full transition-colors ${
-                      newArrivals ? 'bg-blue-500' : 'bg-gray-300'
-                    }`}
-                  >
-                    <Switch.Thumb
-                      className={`block w-5 h-5 bg-white rounded-full transition-transform ${
-                        newArrivals ? 'translate-x-5' : 'translate-x-1'
-                      }`}
-                    />
-                  </Switch.Root>
                 </div>
               </div>
 
@@ -372,20 +411,23 @@ export default function Profile() {
               <div className="mt-8 pt-8 border-t">
                 <h3 className="text-lg text-gray-900 mb-4">Historia transakcji</h3>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div>
-                      <div className="text-gray-900">Premium Plan - Miesięczny</div>
-                      <div className="text-sm text-gray-500">15 marca 2026</div>
+                  {billingHistory.map((transaction) => (
+                    <div
+                      key={`${transaction.number}-${transaction.date}`}
+                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                    >
+                      <div>
+                        <div className="text-gray-900">
+                          {transaction.name}{' '}
+                          <span className="text-gray-500">#{transaction.number}</span>
+                        </div>
+                        <div className="text-sm text-gray-500">{transaction.date}</div>
+                      </div>
+                      <div className="text-gray-900 whitespace-nowrap">
+                        {transaction.price.toLocaleString('pl-PL')} zł
+                      </div>
                     </div>
-                    <div className="text-gray-900">49,99 zł</div>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div>
-                      <div className="text-gray-900">Premium Plan - Miesięczny</div>
-                      <div className="text-sm text-gray-500">15 lutego 2026</div>
-                    </div>
-                    <div className="text-gray-900">49,99 zł</div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
