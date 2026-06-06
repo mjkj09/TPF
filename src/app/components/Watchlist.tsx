@@ -121,6 +121,12 @@ export default function Watchlist() {
     }
   };
 
+  const toggleAutoBuy = (id: number, enabled: boolean) => {
+    setWatchedSets((sets) =>
+      sets.map((set) => (set.id === id ? { ...set, autoBuy: enabled } : set)),
+    );
+  };
+
   const activeAlertsCount = watchedSets.length;
   const autoBuyCount = watchedSets.filter((set) => set.autoBuy).length;
 
@@ -306,7 +312,8 @@ export default function Watchlist() {
                       <div className="flex items-center gap-2">
                         <Switch.Root
                           checked={set.autoBuy}
-                          className={`relative w-11 h-6 shrink-0 rounded-full transition-colors ${
+                          onCheckedChange={(checked) => toggleAutoBuy(set.id, checked)}
+                          className={`relative w-11 h-6 shrink-0 rounded-full transition-colors cursor-pointer ${
                             set.autoBuy ? 'bg-green-500' : 'bg-gray-300'
                           }`}
                         >
@@ -410,7 +417,8 @@ export default function Watchlist() {
                   <div className="flex items-center gap-2">
                     <Switch.Root
                       checked={set.autoBuy}
-                      className={`relative w-11 h-6 rounded-full transition-colors ${
+                      onCheckedChange={(checked) => toggleAutoBuy(set.id, checked)}
+                      className={`relative w-11 h-6 rounded-full transition-colors cursor-pointer ${
                         set.autoBuy ? 'bg-green-500' : 'bg-gray-300'
                       }`}
                     >
