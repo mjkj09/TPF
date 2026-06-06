@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router';
-import { Heart, Bell, ChevronLeft, X, Mail, Zap, Check } from 'lucide-react';
+import { Heart, Bell, ChevronLeft, X, Mail, Zap, Check, TrendingDown } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useState, useEffect, useRef } from 'react';
 import { getMockProductById, mockProducts } from '@/app/data/mockProducts';
@@ -29,6 +29,11 @@ export default function ProductDetail() {
   const product = getMockProductById(Number(id)) ?? mockProducts[0];
   const images = getMockGallery(product.gallery ?? [product.image]);
   const CURRENT_PRICE = product.price;
+  const discount =
+    product.oldPrice > product.price
+      ? Math.round((1 - product.price / product.oldPrice) * 100)
+      : 0;
+  const lowestStorePrice = Math.min(...stores.map((store) => store.price));
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   useEffect(() => {
@@ -98,7 +103,7 @@ export default function ProductDetail() {
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Product Header */}
-        <div className="grid md:grid-cols-2 gap-8 mb-8">
+        <div className="grid md:grid-cols-2 gap-8 items-start mb-8">
           {/* Image Gallery */}
           <div>
             <div className="relative aspect-square w-full mb-4 rounded-lg shadow-md bg-gray-50 overflow-hidden">
@@ -129,13 +134,39 @@ export default function ProductDetail() {
           </div>
 
           {/* Product Info */}
-          <div>
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <div className="text-sm text-gray-500 mb-2">{product.series}</div>
-              <h1 className="text-3xl text-gray-900 mb-2">{product.name}</h1>
-              <div className="text-gray-600 mb-6">Numer zestawu: <span className="text-gray-900">#{product.number}</span></div>
+          <div className="w-full md:aspect-square md:min-h-0">
+            <div className="bg-white rounded-lg p-6 shadow-sm h-full flex flex-col min-h-0 overflow-hidden">
+              <div className="shrink-0">
+                <span className="inline-block px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">
+                  {product.series}
+                </span>
+                <h1 className="text-2xl md:text-3xl text-gray-900 mt-3 mb-1">{product.name}</h1>
+                <div className="text-sm text-gray-600">
+                  Numer zestawu: <span className="text-gray-900 font-medium">#{product.number}</span>
+                </div>
+              </div>
 
-              <div className="grid grid-cols-2 gap-4 mb-6 pb-6 border-b">
+              <div className="flex-1 min-h-0 flex flex-col justify-center border-y border-gray-100 my-4 px-1">
+                <div className="text-base text-gray-500 mb-3">Aktualna najniższa cena</div>
+                <div className="flex items-end gap-4 flex-wrap">
+                  <span className="text-5xl md:text-6xl text-red-600 leading-none font-semibold tracking-tight">
+                    {product.price.toLocaleString('pl-PL')} zł
+                  </span>
+                  {discount > 0 && (
+                    <span className="text-xl md:text-2xl text-gray-400 line-through pb-1">
+                      {product.oldPrice.toLocaleString('pl-PL')} zł
+                    </span>
+                  )}
+                </div>
+                {discount > 0 && (
+                  <div className="flex items-center gap-2 mt-4 text-base text-red-600">
+                    <TrendingDown className="w-5 h-5 shrink-0" />
+                    <span className="font-medium">-{discount}% od ceny katalogowej</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="shrink-0 grid grid-cols-2 gap-x-4 gap-y-3">
                 <div>
                   <div className="text-sm text-gray-500">Grupa wiekowa</div>
                   <div className="text-gray-900">{product.ageRange}</div>
@@ -154,16 +185,16 @@ export default function ProductDetail() {
                 </div>
               </div>
 
-              <div className="flex flex-col md:flex-row gap-3">
-                <button className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors">
-                  <Heart className="w-5 h-5" />
+              <div className="shrink-0 flex flex-col sm:flex-row gap-3 mt-4 pt-4">
+                <button className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors text-sm">
+                  <Heart className="w-4 h-4" />
                   Dodaj do obserwowanych
                 </button>
                 <button
                   onClick={() => setModalOpen(true)}
-                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors text-sm"
                 >
-                  <Bell className="w-5 h-5" />
+                  <Bell className="w-4 h-4" />
                   Ustaw alert cenowy
                 </button>
               </div>
@@ -208,74 +239,116 @@ export default function ProductDetail() {
 
           {/* Desktop Layout */}
           <div className="hidden md:block space-y-3">
-            {stores.map((store) => (
-              <div
-                key={store.id}
-                className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors"
-              >
-                <div className="flex items-center gap-4 flex-1">
-                  <div className="w-12 h-12 shrink-0 flex items-center justify-center">
-                    <img
-                      src={getShopLogo(store.logo)}
-                      alt={store.name}
-                      className="max-w-full max-h-full object-contain"
-                    />
+            {stores.map((store) => {
+              const isBestPrice = store.price === lowestStorePrice;
+
+              return (
+                <div
+                  key={store.id}
+                  className={`relative flex items-center justify-between p-4 rounded-lg transition-colors ${
+                    isBestPrice
+                      ? 'border-2 border-green-500 bg-green-50 shadow-sm'
+                      : 'border border-gray-200 hover:border-blue-300'
+                  }`}
+                >
+                  {isBestPrice && (
+                    <span className="absolute -top-2.5 left-4 px-2 py-0.5 bg-green-500 text-white text-xs font-medium rounded-full">
+                      Najlepsza cena
+                    </span>
+                  )}
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="w-12 h-12 shrink-0 flex items-center justify-center">
+                      <img
+                        src={getShopLogo(store.logo)}
+                        alt={store.name}
+                        className="max-w-full max-h-full object-contain"
+                      />
+                    </div>
+                    <div>
+                      <div className="text-gray-900">{store.name}</div>
+                      <div className="text-sm text-gray-500">{store.stock}</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-gray-900">{store.name}</div>
-                    <div className="text-sm text-gray-500">{store.stock}</div>
+
+                  <div className="flex items-center gap-6">
+                    <div>
+                      <div className="text-sm text-gray-500">Dostępność</div>
+                      <div className="text-gray-900">{store.availability}</div>
+                    </div>
+
+                    <div className="text-right">
+                      <div className={`text-2xl ${isBestPrice ? 'text-green-600 font-semibold' : 'text-gray-900'}`}>
+                        {store.price} zł
+                      </div>
+                    </div>
+
+                    <button
+                      className={`px-6 py-2 text-white rounded-lg transition-colors whitespace-nowrap ${
+                        isBestPrice
+                          ? 'bg-green-600 hover:bg-green-700'
+                          : 'bg-blue-500 hover:bg-blue-600'
+                      }`}
+                    >
+                      Idź do sklepu
+                    </button>
                   </div>
                 </div>
-
-                <div className="flex items-center gap-6">
-                  <div>
-                    <div className="text-sm text-gray-500">Dostępność</div>
-                    <div className="text-gray-900">{store.availability}</div>
-                  </div>
-
-                  <div className="text-right">
-                    <div className="text-2xl text-gray-900">{store.price} zł</div>
-                  </div>
-
-                  <button className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors whitespace-nowrap">
-                    Idź do sklepu
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Mobile Layout */}
           <div className="md:hidden space-y-3">
-            {stores.map((store) => (
-              <div
-                key={store.id}
-                className="p-4 border border-gray-200 rounded-lg"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 shrink-0 flex items-center justify-center">
-                    <img
-                      src={getShopLogo(store.logo)}
-                      alt={store.name}
-                      className="max-w-full max-h-full object-contain"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-gray-900">{store.name}</div>
-                    <div className="text-sm text-gray-500">{store.stock}</div>
-                  </div>
-                </div>
+            {stores.map((store) => {
+              const isBestPrice = store.price === lowestStorePrice;
 
-                <div className="flex items-center justify-between mb-3">
-                  <div className="text-sm text-gray-600">{store.availability}</div>
-                  <div className="text-2xl text-gray-900">{store.price} zł</div>
-                </div>
+              return (
+                <div
+                  key={store.id}
+                  className={`relative p-4 rounded-lg ${
+                    isBestPrice
+                      ? 'border-2 border-green-500 bg-green-50 shadow-sm'
+                      : 'border border-gray-200'
+                  }`}
+                >
+                  {isBestPrice && (
+                    <span className="absolute -top-2.5 left-4 px-2 py-0.5 bg-green-500 text-white text-xs font-medium rounded-full">
+                      Najlepsza cena
+                    </span>
+                  )}
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 shrink-0 flex items-center justify-center">
+                      <img
+                        src={getShopLogo(store.logo)}
+                        alt={store.name}
+                        className="max-w-full max-h-full object-contain"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-gray-900">{store.name}</div>
+                      <div className="text-sm text-gray-500">{store.stock}</div>
+                    </div>
+                  </div>
 
-                <button className="w-full px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors">
-                  Idź do sklepu
-                </button>
-              </div>
-            ))}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-sm text-gray-600">{store.availability}</div>
+                    <div className={`text-2xl ${isBestPrice ? 'text-green-600 font-semibold' : 'text-gray-900'}`}>
+                      {store.price} zł
+                    </div>
+                  </div>
+
+                  <button
+                    className={`w-full px-6 py-3 text-white rounded-lg transition-colors ${
+                      isBestPrice
+                        ? 'bg-green-600 hover:bg-green-700'
+                        : 'bg-blue-500 hover:bg-blue-600'
+                    }`}
+                  >
+                    Idź do sklepu
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
