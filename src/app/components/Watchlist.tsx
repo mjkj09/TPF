@@ -1,10 +1,22 @@
+import { useState } from 'react';
 import { Link } from 'react-router';
-import { ChevronLeft, Bell, TrendingDown, TrendingUp, Minus, ExternalLink } from 'lucide-react';
+import { toast } from 'sonner';
+import { ChevronLeft, Bell, TrendingDown, TrendingUp, Minus, ExternalLink, Trash2, Pencil } from 'lucide-react';
 import * as Switch from '@radix-ui/react-switch';
+import { Checkbox } from './ui/checkbox';
 import { getMockProductById } from '@/app/data/mockProducts';
 import { getMockImage } from '@/app/data/getMockImage';
 
-const watchedSets = [
+function getRemovalMessage(count: number): string {
+  if (count === 1) return 'Usunięto 1 zestaw z listy życzeń';
+  if (count >= 2 && count <= 4) return `Usunięto ${count} zestawy z listy życzeń`;
+  return `Usunięto ${count} zestawów z listy życzeń`;
+}
+
+const watchlistCheckboxClass =
+  'size-5 rounded-md border-2 border-gray-300 bg-white shadow-sm data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 data-[state=checked]:text-white hover:border-blue-400 transition-colors';
+
+const initialWatchedSets = [
   {
     id: 1,
     name: 'Nissan Skyline GT-R',
@@ -73,6 +85,45 @@ const watchedSets = [
 ];
 
 export default function Watchlist() {
+  const [watchedSets, setWatchedSets] = useState(initialWatchedSets);
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+
+  const allSelected = watchedSets.length > 0 && selectedIds.length === watchedSets.length;
+
+  const toggleEditing = () => {
+    setIsEditing((editing) => {
+      if (editing) setSelectedIds([]);
+      return !editing;
+    });
+  };
+
+  const toggleSelect = (id: number) => {
+    setSelectedIds((ids) =>
+      ids.includes(id) ? ids.filter((item) => item !== id) : [...ids, id],
+    );
+  };
+
+  const toggleSelectAll = () => {
+    setSelectedIds(allSelected ? [] : watchedSets.map((set) => set.id));
+  };
+
+  const handleDeleteSelected = () => {
+    if (selectedIds.length === 0) return;
+
+    const count = selectedIds.length;
+    setWatchedSets((sets) => sets.filter((set) => !selectedIds.includes(set.id)));
+    setSelectedIds([]);
+    toast.success(getRemovalMessage(count));
+
+    if (count === watchedSets.length) {
+      setIsEditing(false);
+    }
+  };
+
+  const activeAlertsCount = watchedSets.length;
+  const autoBuyCount = watchedSets.filter((set) => set.autoBuy).length;
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -99,66 +150,139 @@ export default function Watchlist() {
           </div>
           <div className="bg-white rounded-lg p-6 shadow-sm">
             <div className="text-sm text-gray-500 mb-2">Aktywne alerty</div>
-            <div className="text-3xl text-blue-600">3</div>
+            <div className="text-3xl text-blue-600">{activeAlertsCount}</div>
           </div>
           <div className="bg-white rounded-lg p-6 shadow-sm">
             <div className="text-sm text-gray-500 mb-2">Autozakup włączony</div>
-            <div className="text-3xl text-green-600">2</div>
+            <div className="text-3xl text-green-600">{autoBuyCount}</div>
           </div>
+        </div>
+
+        {watchedSets.length === 0 ? (
+          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+            <p className="text-gray-600 mb-4">Twoja lista życzeń jest pusta.</p>
+            <Link
+              to="/search"
+              className="inline-flex items-center px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+            >
+              Przeglądaj zestawy
+            </Link>
+          </div>
+        ) : (
+          <>
+        <div className="flex justify-end gap-2 mb-4">
+          {isEditing && (
+            <button
+              type="button"
+              onClick={handleDeleteSelected}
+              disabled={selectedIds.length === 0}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-sm bg-red-500 text-white hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-red-500"
+            >
+              <Trash2 className="w-4 h-4" />
+              Usuń{selectedIds.length > 0 ? ` (${selectedIds.length})` : ''}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={toggleEditing}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-sm ${
+              isEditing
+                ? 'bg-gray-900 text-white hover:bg-gray-800'
+                : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+            }`}
+          >
+            <Pencil className="w-4 h-4" />
+            {isEditing ? 'Gotowe' : 'Edytuj listę'}
+          </button>
         </div>
 
         {/* Watched Sets List - Desktop Table */}
         <div className="hidden md:block bg-white rounded-lg shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full table-fixed">
+              <colgroup>
+                {isEditing && <col style={{ width: '4.5rem' }} />}
+                <col style={{ width: isEditing ? '24%' : '28%' }} />
+                <col style={{ width: '10%' }} />
+                <col style={{ width: '10%' }} />
+                <col style={{ width: '14%' }} />
+                <col style={{ width: '8%' }} />
+                <col style={{ width: '14%' }} />
+                <col style={{ width: isEditing ? '14%' : '16%' }} />
+              </colgroup>
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm text-gray-600">Zestaw</th>
-                  <th className="px-6 py-4 text-left text-sm text-gray-600">Seria</th>
-                  <th className="px-6 py-4 text-left text-sm text-gray-600">Aktualna cena</th>
-                  <th className="px-6 py-4 text-left text-sm text-gray-600">Próg alertu</th>
-                  <th className="px-6 py-4 text-left text-sm text-gray-600">Zmiana</th>
-                  <th className="px-6 py-4 text-left text-sm text-gray-600">Autozakup</th>
-                  <th className="px-6 py-4 text-left text-sm text-gray-600">Akcje</th>
+                  {isEditing && (
+                    <th className="px-3 py-4 align-middle">
+                      <div className="flex items-center justify-center">
+                        <Checkbox
+                          checked={allSelected}
+                          onCheckedChange={toggleSelectAll}
+                          aria-label="Zaznacz wszystkie"
+                          className={watchlistCheckboxClass}
+                        />
+                      </div>
+                    </th>
+                  )}
+                  <th className="px-4 py-4 text-left text-sm text-gray-600">Zestaw</th>
+                  <th className="px-4 py-4 text-left text-sm text-gray-600">Seria</th>
+                  <th className="px-4 py-4 text-left text-sm text-gray-600">Aktualna cena</th>
+                  <th className="px-4 py-4 text-left text-sm text-gray-600">Próg alertu</th>
+                  <th className="px-4 py-4 text-left text-sm text-gray-600">Zmiana</th>
+                  <th className="px-4 py-4 text-left text-sm text-gray-600">Autozakup</th>
+                  <th className="px-4 py-4 text-left text-sm text-gray-600">Akcje</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {watchedSets.map((set) => (
                   <tr key={set.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-4">
+                    {isEditing && (
+                      <td className="px-3 py-4 align-middle">
+                        <div className="flex items-center justify-center">
+                          <Checkbox
+                            checked={selectedIds.includes(set.id)}
+                            onCheckedChange={() => toggleSelect(set.id)}
+                            aria-label={`Zaznacz ${set.name}`}
+                            className={watchlistCheckboxClass}
+                          />
+                        </div>
+                      </td>
+                    )}
+                    <td className="px-4 py-4 align-middle">
+                      <div className="flex items-center gap-3 min-w-0">
                         <img
                           src={getMockImage(getMockProductById(set.id)?.image ?? 'placeholder.svg')}
                           alt={set.name}
-                          className="w-20 h-16 object-cover rounded"
+                          className="w-16 h-14 shrink-0 object-contain rounded bg-gray-50"
                         />
-                        <div>
-                          <div className="text-gray-900">{set.name}</div>
+                        <div className="min-w-0">
+                          <div className="text-gray-900 truncate">{set.name}</div>
                           <div className="text-sm text-gray-500">#{set.number}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
+                    <td className="px-4 py-4 align-middle">
+                      <span className="inline-block px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-sm whitespace-nowrap">
                         {set.series}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-4 align-middle whitespace-nowrap">
                       <div className="text-lg text-gray-900">{set.currentPrice} zł</div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <Bell className="w-4 h-4 text-yellow-500" />
+                    <td className="px-4 py-4 align-middle">
+                      <div className="flex items-center gap-1.5 whitespace-nowrap">
+                        <Bell className="w-4 h-4 shrink-0 text-yellow-500" />
                         <input
-                          type="number"
+                          type="text"
+                          inputMode="numeric"
                           value={set.alertThreshold}
-                          className="w-24 px-2 py-1 border border-gray-300 rounded text-gray-900"
+                          className="w-20 px-2 py-1 border border-gray-300 rounded text-gray-900 text-sm"
                           readOnly
                         />
-                        <span className="text-gray-600">zł</span>
+                        <span className="text-sm text-gray-600">zł</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-4 align-middle whitespace-nowrap">
                       {set.changeType === 'down' && (
                         <div className="flex items-center gap-1 text-green-600">
                           <TrendingDown className="w-4 h-4" />
@@ -178,11 +302,11 @@ export default function Watchlist() {
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-4 align-middle">
                       <div className="flex items-center gap-2">
                         <Switch.Root
                           checked={set.autoBuy}
-                          className={`relative w-11 h-6 rounded-full transition-colors ${
+                          className={`relative w-11 h-6 shrink-0 rounded-full transition-colors ${
                             set.autoBuy ? 'bg-green-500' : 'bg-gray-300'
                           }`}
                         >
@@ -192,21 +316,23 @@ export default function Watchlist() {
                             }`}
                           />
                         </Switch.Root>
-                        {set.autoBuy && (
-                          <span className="text-xs text-green-600">Włączony</span>
-                        )}
+                        <span className={`text-xs w-14 ${set.autoBuy ? 'text-green-600' : 'invisible'}`}>
+                          Włączony
+                        </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-4 align-middle">
                       <Link
                         to={`/product/${set.id}#store-offers`}
-                        className="flex flex-col items-start gap-0.5 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors text-sm group"
+                        className="inline-flex flex-col items-start gap-0.5 py-1 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors text-sm group"
                       >
-                        <span className="flex items-center gap-1 group-hover:gap-2 transition-all">
+                        <span className="flex items-center gap-1 whitespace-nowrap">
                           Zobacz ofertę
                           <ExternalLink className="w-3.5 h-3.5" />
                         </span>
-                        <span className="text-xs text-gray-400">{set.bestStoreLogo} {set.bestStore} · {set.currentPrice} zł</span>
+                        <span className="text-xs text-gray-400 truncate max-w-full">
+                          {set.bestStoreLogo} {set.bestStore} · {set.currentPrice} zł
+                        </span>
                       </Link>
                     </td>
                   </tr>
@@ -220,7 +346,15 @@ export default function Watchlist() {
         <div className="md:hidden space-y-4">
           {watchedSets.map((set) => (
             <div key={set.id} className="bg-white rounded-lg shadow-sm p-4">
-              <div className="flex gap-4 mb-4">
+              <div className="flex gap-4 mb-4 items-center">
+                {isEditing && (
+                  <Checkbox
+                    checked={selectedIds.includes(set.id)}
+                    onCheckedChange={() => toggleSelect(set.id)}
+                    aria-label={`Zaznacz ${set.name}`}
+                    className={watchlistCheckboxClass}
+                  />
+                )}
                 <img
                   src={getMockImage(getMockProductById(set.id)?.image ?? 'placeholder.svg')}
                   alt={set.name}
@@ -303,6 +437,8 @@ export default function Watchlist() {
             </div>
           ))}
         </div>
+          </>
+        )}
 
         {/* Info Box */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
