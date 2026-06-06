@@ -4,6 +4,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { useState, useEffect, useRef } from 'react';
 import { getMockProductById, mockProducts } from '@/app/data/mockProducts';
 import { getMockGallery } from '@/app/data/getMockImage';
+import { getShopLogo } from '@/app/data/getShopLogo';
 
 const priceHistory = [
   { date: '10.2025', price: 1699 },
@@ -16,11 +17,11 @@ const priceHistory = [
 ];
 
 const stores = [
-  { id: 1, name: 'LEGO.com', logo: '🏪', price: 1499, availability: 'Dostępny', stock: 'Wysyłka 24h' },
-  { id: 2, name: 'Allegro', logo: '🛒', price: 1549, availability: 'Dostępny', stock: 'Wysyłka 2-3 dni' },
-  { id: 3, name: 'Empik', logo: '📚', price: 1599, availability: 'Dostępny', stock: 'Wysyłka 24h' },
-  { id: 4, name: 'MediaMarkt', logo: '📺', price: 1649, availability: 'Dostępny', stock: 'Odbiór w sklepie' },
-  { id: 5, name: 'Euro RTV AGD', logo: '🏬', price: 1699, availability: 'Ostatnie sztuki', stock: 'Wysyłka 24h' }
+  { id: 1, name: 'LEGO.com', logo: 'LEGO.png', price: 1499, availability: 'Dostępny', stock: 'Wysyłka 24h' },
+  { id: 2, name: 'Allegro', logo: 'ALLEGRO.png', price: 1549, availability: 'Dostępny', stock: 'Wysyłka 2-3 dni' },
+  { id: 3, name: 'Empik', logo: 'EMPIK.png', price: 1599, availability: 'Dostępny', stock: 'Wysyłka 24h' },
+  { id: 4, name: 'MediaMarkt', logo: 'MEDIAMARKT.png', price: 1649, availability: 'Dostępny', stock: 'Odbiór w sklepie' },
+  { id: 5, name: 'Euro RTV AGD', logo: 'RTVEUROAGD.jpg', price: 1699, availability: 'Ostatnie sztuki', stock: 'Wysyłka 24h' },
 ];
 
 export default function ProductDetail() {
@@ -213,7 +214,13 @@ export default function ProductDetail() {
                 className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors"
               >
                 <div className="flex items-center gap-4 flex-1">
-                  <div className="text-3xl">{store.logo}</div>
+                  <div className="w-12 h-12 shrink-0 flex items-center justify-center">
+                    <img
+                      src={getShopLogo(store.logo)}
+                      alt={store.name}
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  </div>
                   <div>
                     <div className="text-gray-900">{store.name}</div>
                     <div className="text-sm text-gray-500">{store.stock}</div>
@@ -246,7 +253,13 @@ export default function ProductDetail() {
                 className="p-4 border border-gray-200 rounded-lg"
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="text-3xl">{store.logo}</div>
+                  <div className="w-12 h-12 shrink-0 flex items-center justify-center">
+                    <img
+                      src={getShopLogo(store.logo)}
+                      alt={store.name}
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  </div>
                   <div className="flex-1">
                     <div className="text-gray-900">{store.name}</div>
                     <div className="text-sm text-gray-500">{store.stock}</div>
