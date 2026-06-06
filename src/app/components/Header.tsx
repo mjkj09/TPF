@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { Heart, User, Menu, X, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { btnPrimary, navLinkClass, navLinkClassMobile } from '../styles/tokens';
 import logo from '@/assets/images/logo.png';
 
 interface HeaderProps {
@@ -24,7 +25,6 @@ export default function Header({ currentView }: HeaderProps) {
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
           <Link
             to="/"
             className="flex items-center gap-2"
@@ -34,25 +34,14 @@ export default function Header({ currentView }: HeaderProps) {
           </Link>
 
           <nav className="hidden md:flex items-center gap-4 ml-auto">
-            <Link
-              to="/search"
-              className={`px-4 py-2 rounded-lg transition-colors ${
-                currentView === 'search'
-                  ? 'bg-blue-500 text-white'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }`}
-            >
+            <Link to="/search" className={navLinkClass(currentView === 'search')}>
               Odkrywaj
             </Link>
             {isAuthenticated ? (
               <>
                 <Link
                   to="/wishlist"
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                    currentView === 'watchlist'
-                      ? 'bg-blue-500 text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
+                  className={`flex items-center gap-2 ${navLinkClass(currentView === 'watchlist')}`}
                 >
                   <Heart className="w-4 h-4" />
                   Lista życzeń
@@ -60,11 +49,7 @@ export default function Header({ currentView }: HeaderProps) {
                 <div className="relative">
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                      currentView === 'profile'
-                        ? 'bg-blue-500 text-white'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
+                    className={`flex items-center gap-2 ${navLinkClass(currentView === 'profile')}`}
                   >
                     <User className="w-4 h-4" />
                     {user?.name}
@@ -91,19 +76,12 @@ export default function Header({ currentView }: HeaderProps) {
               </>
             ) : (
               <>
-                <Link
-                  to="/login"
-                  className={`px-4 py-2 rounded-lg transition-colors ${
-                    currentView === 'login'
-                      ? 'bg-blue-500 text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
+                <Link to="/login" className={navLinkClass(currentView === 'login')}>
                   Zaloguj się
                 </Link>
                 <Link
                   to="/register"
-                  className={`px-4 py-2 rounded-lg transition-colors bg-blue-500 text-white hover:bg-blue-600 ${
+                  className={`${btnPrimary} px-4 py-2 ${
                     currentView === 'register' ? 'bg-blue-600' : ''
                   }`}
                 >
@@ -113,7 +91,6 @@ export default function Header({ currentView }: HeaderProps) {
             )}
           </nav>
 
-          {/* Mobile Menu Button */}
           <button
             className="md:hidden p-2 text-gray-700"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -122,18 +99,13 @@ export default function Header({ currentView }: HeaderProps) {
           </button>
         </div>
 
-        {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <nav className="md:hidden py-4 border-t">
             <div className="flex flex-col gap-2">
               <Link
                 to="/search"
                 onClick={() => setMobileMenuOpen(false)}
-                className={`px-4 py-3 rounded-lg transition-colors text-left ${
-                  currentView === 'search'
-                    ? 'bg-blue-500 text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
+                className={navLinkClassMobile(currentView === 'search')}
               >
                 Odkrywaj
               </Link>
@@ -142,11 +114,7 @@ export default function Header({ currentView }: HeaderProps) {
                   <Link
                     to="/wishlist"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-2 px-4 py-3 rounded-lg transition-colors text-left ${
-                      currentView === 'watchlist'
-                        ? 'bg-blue-500 text-white'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
+                    className={`flex items-center gap-2 ${navLinkClassMobile(currentView === 'watchlist')}`}
                   >
                     <Heart className="w-4 h-4" />
                     Lista życzeń
@@ -154,11 +122,7 @@ export default function Header({ currentView }: HeaderProps) {
                   <Link
                     to="/profile"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-2 px-4 py-3 rounded-lg transition-colors text-left ${
-                      currentView === 'profile'
-                        ? 'bg-blue-500 text-white'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
+                    className={`flex items-center gap-2 ${navLinkClassMobile(currentView === 'profile')}`}
                   >
                     <User className="w-4 h-4" />
                     {user?.name}
@@ -179,18 +143,14 @@ export default function Header({ currentView }: HeaderProps) {
                   <Link
                     to="/login"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`px-4 py-3 rounded-lg transition-colors text-left ${
-                      currentView === 'login'
-                        ? 'bg-blue-500 text-white'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
+                    className={navLinkClassMobile(currentView === 'login')}
                   >
                     Zaloguj się
                   </Link>
                   <Link
                     to="/register"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`px-4 py-3 rounded-lg transition-colors text-left bg-blue-500 text-white hover:bg-blue-600 ${
+                    className={`${navLinkClassMobile(currentView === 'register')} bg-blue-500 text-white hover:bg-blue-600 ${
                       currentView === 'register' ? 'bg-blue-600' : ''
                     }`}
                   >

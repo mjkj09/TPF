@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router';
-import { Search, SlidersHorizontal, X, ChevronDown } from 'lucide-react';
+import { useSearchParams } from 'react-router';
+import { SlidersHorizontal, X, ChevronDown } from 'lucide-react';
 import { mockProducts } from '@/app/data/mockProducts';
-import { getMockImage } from '@/app/data/getMockImage';
-
-const seriesOptions = ['Wszystkie', 'Technic', 'Star Wars', 'City', 'Icons', 'Harry Potter', 'Creator', 'Friends'];
+import { seriesOptions } from '@/app/data/categories';
+import { Button } from '../components/Button';
+import { ContentCard } from '../components/ContentCard';
+import { PageHeader } from '../components/PageHeader';
+import { PageLayout } from '../components/PageLayout';
+import { ProductCard } from '../components/ProductCard';
+import { SearchBar } from '../components/SearchBar';
+import { cardClass, pageContainer } from '../styles/tokens';
 const ageOptions = ['Wszystkie', '4+', '6+', '7+', '10+', '16+', '18+'];
 const priceRanges = [
   { label: 'Wszystkie', min: 0, max: Infinity },
@@ -74,37 +79,28 @@ export default function SearchResults() {
     (selectedPriceRange !== 0 ? 1 : 0);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Search Bar */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <form onSubmit={handleSearch} className="relative max-w-3xl">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Wyszukaj po nazwie lub numerze katalogowym..."
-              className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-gray-900"
-            />
-          </form>
-        </div>
-      </div>
+    <PageLayout bare>
+      <PageHeader innerClassName="py-6">
+        <SearchBar
+          value={searchQuery}
+          onChange={setSearchQuery}
+          onSubmit={handleSearch}
+          placeholder="Wyszukaj po nazwie lub numerze katalogowym..."
+          size="md"
+        />
+      </PageHeader>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className={`${pageContainer} py-6`}>
         <div className="flex flex-col md:flex-row gap-6">
           {/* Filters Sidebar - Desktop */}
           <aside className="hidden md:block w-64 flex-shrink-0">
-            <div className="bg-white rounded-lg p-6 shadow-sm sticky top-20">
+            <div className={`${cardClass} p-6 sticky top-20`}>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg text-gray-900">Filtry</h2>
                 {activeFiltersCount > 0 && (
-                  <button
-                    onClick={clearFilters}
-                    className="text-sm text-blue-600 hover:text-blue-700"
-                  >
+                  <Button variant="link" onClick={clearFilters}>
                     Wyczyść
-                  </button>
+                  </Button>
                 )}
               </div>
 
@@ -171,9 +167,11 @@ export default function SearchResults() {
           <div className="flex-1">
             {/* Mobile Filters Button */}
             <div className="md:hidden mb-4">
-              <button
+              <Button
+                variant="outline"
+                fullWidth
                 onClick={() => setFiltersOpen(!filtersOpen)}
-                className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-700"
+                className="justify-between px-4 py-3"
               >
                 <span className="flex items-center gap-2">
                   <SlidersHorizontal className="w-5 h-5" />
@@ -185,15 +183,15 @@ export default function SearchResults() {
                   )}
                 </span>
                 <ChevronDown className={`w-5 h-5 transition-transform ${filtersOpen ? 'rotate-180' : ''}`} />
-              </button>
+              </Button>
 
               {filtersOpen && (
-                <div className="mt-4 bg-white rounded-lg p-4 shadow-sm border">
+                <div className={`mt-4 ${cardClass} p-4`}>
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-gray-900">Filtry</h2>
-                    <button onClick={() => setFiltersOpen(false)}>
+                    <Button variant="ghost" size="sm" onClick={() => setFiltersOpen(false)}>
                       <X className="w-5 h-5 text-gray-500" />
-                    </button>
+                    </Button>
                   </div>
 
                   {/* Mobile Filters Content (same as desktop) */}
@@ -237,12 +235,9 @@ export default function SearchResults() {
                       </select>
                     </div>
 
-                    <button
-                      onClick={clearFilters}
-                      className="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
-                    >
+                    <Button variant="secondary" fullWidth onClick={clearFilters}>
                       Wyczyść filtry
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
@@ -267,55 +262,19 @@ export default function SearchResults() {
 
             {/* Products Grid */}
             {sortedProducts.length === 0 ? (
-              <div className="bg-white rounded-lg p-12 text-center">
+              <ContentCard className="p-12 text-center">
                 <p className="text-gray-500">Nie znaleziono zestawów spełniających kryteria</p>
-              </div>
+              </ContentCard>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {sortedProducts.map((product) => (
-                  <Link
-                    key={product.id}
-                    to={`/product/${product.id}`}
-                    className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-gray-200"
-                  >
-                    <div className="relative">
-                      <img
-                        src={getMockImage(product.image)}
-                        alt={product.name}
-                        className="w-full h-48 object-contain bg-gray-50 p-4"
-                      />
-                      {product.oldPrice > product.price && (
-                        <div className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm">
-                          -{Math.round((1 - product.price / product.oldPrice) * 100)}%
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="p-4">
-                      <div className="text-sm text-gray-500 mb-1">{product.series}</div>
-                      <h3 className="text-gray-900 mb-1">{product.name}</h3>
-                      <div className="text-sm text-gray-600 mb-2">#{product.number}</div>
-
-                      <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
-                        <span>{product.ageRange}</span>
-                        <span>•</span>
-                        <span>{product.pieces} szt.</span>
-                      </div>
-
-                      <div className="flex items-end gap-3">
-                        {product.oldPrice > product.price && (
-                          <span className="text-sm text-gray-400 line-through">{product.oldPrice} zł</span>
-                        )}
-                        <span className="text-2xl text-gray-900">{product.price} zł</span>
-                      </div>
-                    </div>
-                  </Link>
+                  <ProductCard key={product.id} product={product} variant="full" />
                 ))}
               </div>
             )}
           </div>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 }
