@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { Heart, User, Menu, X, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import logo from '@/assets/images/logo.png';
 
 interface HeaderProps {
   currentView: 'home' | 'product' | 'watchlist' | 'search' | 'profile' | 'login' | 'register';
@@ -29,12 +30,7 @@ export default function Header({ currentView }: HeaderProps) {
             className="flex items-center gap-2"
             onClick={() => setMobileMenuOpen(false)}
           >
-            <div className="flex gap-1">
-              <div className="w-6 h-6 bg-red-500 rounded"></div>
-              <div className="w-6 h-6 bg-yellow-400 rounded"></div>
-              <div className="w-6 h-6 bg-blue-500 rounded"></div>
-            </div>
-            <span className="text-xl text-gray-900">LEGO Tracker</span>
+            <img src={logo} alt="LEGO Tracker" className="h-10 w-auto" />
           </Link>
 
           <nav className="hidden md:flex items-center gap-4 ml-auto">
