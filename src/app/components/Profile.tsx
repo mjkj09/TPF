@@ -120,6 +120,16 @@ export default function Profile() {
     handleAddPaymentOpenChange(false);
   };
 
+  const handleSetDefaultPaymentMethod = (id: string) => {
+    setPaymentMethods((current) =>
+      current.map((method) => ({
+        ...method,
+        isDefault: method.id === id,
+      })),
+    );
+    toast.success('Domyślna metoda płatności została zmieniona');
+  };
+
   const displayName = user?.name ?? 'Użytkownik';
   const displayEmail = user?.email ?? '';
   const displayInitials = useMemo(() => {
@@ -500,10 +510,18 @@ export default function Profile() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      {method.isDefault && (
-                        <span className="px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                      {method.isDefault ? (
+                        <span className="inline-flex h-8 items-center px-3 text-xs text-green-700 bg-green-100 rounded-full">
                           Domyślna
                         </span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleSetDefaultPaymentMethod(method.id)}
+                          className="inline-flex h-8 items-center px-3 text-xs text-gray-400 border border-gray-200 hover:text-gray-700 hover:bg-gray-50 rounded-full transition-colors"
+                        >
+                          Ustaw jako domyślną
+                        </button>
                       )}
                       <button
                         type="button"
