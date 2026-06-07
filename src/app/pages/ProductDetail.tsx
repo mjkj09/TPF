@@ -1,5 +1,13 @@
-import { Link, useParams } from 'react-router';
-import { Heart, Bell, ChevronLeft, X, Mail, Zap, Check, TrendingDown } from 'lucide-react';
+import { useParams } from 'react-router';
+import { Heart, Bell, Mail, Zap, Check, TrendingDown } from 'lucide-react';
+import { BackLink } from '../components/BackLink';
+import { Button } from '../components/Button';
+import { ContentCard } from '../components/ContentCard';
+import { Modal } from '../components/Modal';
+import { PageHeader } from '../components/PageHeader';
+import { PageLayout } from '../components/PageLayout';
+import { ToggleSwitch } from '../components/ToggleSwitch';
+import { pageContainer } from '../styles/tokens';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useState, useEffect, useRef } from 'react';
 import { getMockProductById, mockProducts } from '@/app/data/mockProducts';
@@ -49,14 +57,6 @@ export default function ProductDetail() {
   const [saved, setSaved] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Zamknięcie przez Escape
-  useEffect(() => {
-    if (!modalOpen) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setModalOpen(false); };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [modalOpen]);
-
   // Focus na input po otwarciu
   useEffect(() => {
     if (modalOpen) {
@@ -89,21 +89,12 @@ export default function ProductDetail() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <Link
-            to="/"
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-700"
-          >
-            <ChevronLeft className="w-5 h-5" />
-            Powrót do listy
-          </Link>
-        </div>
-      </div>
+    <PageLayout bare>
+      <PageHeader>
+        <BackLink to="/" label="Powrót do listy" />
+      </PageHeader>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className={`${pageContainer} py-8`}>
         {/* Product Header */}
         <div className="grid md:grid-cols-2 gap-8 items-start mb-8">
           {/* Image Gallery */}
@@ -137,7 +128,7 @@ export default function ProductDetail() {
 
           {/* Product Info */}
           <div className="w-full md:aspect-square md:min-h-0">
-            <div className="bg-white rounded-lg p-6 shadow-sm h-full flex flex-col min-h-0 overflow-hidden">
+            <ContentCard className="h-full flex flex-col min-h-0 overflow-hidden">
               <div className="shrink-0">
                 <span className="inline-block px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">
                   {product.series}
@@ -188,24 +179,25 @@ export default function ProductDetail() {
               </div>
 
               <div className="shrink-0 flex flex-col sm:flex-row gap-3 mt-4 pt-4">
-                <button className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors text-sm">
+                <Button variant="danger" className="flex-1 py-3">
                   <Heart className="w-4 h-4" />
                   Dodaj do obserwowanych
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="warning"
+                  className="flex-1 py-3"
                   onClick={() => setModalOpen(true)}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors text-sm"
                 >
                   <Bell className="w-4 h-4" />
                   Ustaw alert cenowy
-                </button>
+                </Button>
               </div>
-            </div>
+            </ContentCard>
           </div>
         </div>
 
         {/* Price History Chart */}
-        <div className="bg-white rounded-lg p-6 shadow-sm mb-8">
+        <ContentCard className="mb-8">
           <h2 className="text-xl text-gray-900 mb-6">Historia cen (ostatnie 6 miesięcy)</h2>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={priceHistory}>
@@ -233,10 +225,10 @@ export default function ProductDetail() {
               <div className="text-xl text-gray-900">1,685 zł</div>
             </div>
           </div>
-        </div>
+        </ContentCard>
 
         {/* Store Offers */}
-        <div id="store-offers" className="bg-white rounded-lg p-6 shadow-sm">
+        <ContentCard id="store-offers">
           <h2 className="text-xl text-gray-900 mb-6">Oferty sklepów</h2>
 
           {/* Desktop Layout */}
@@ -284,18 +276,11 @@ export default function ProductDetail() {
                       </div>
                     </div>
 
-                    <a
-                      href={STORE_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`inline-flex items-center justify-center px-6 py-2 text-white rounded-lg transition-colors whitespace-nowrap ${
-                        isBestPrice
-                          ? 'bg-green-600 hover:bg-green-700'
-                          : 'bg-blue-500 hover:bg-blue-600'
-                      }`}
-                    >
-                      Idź do sklepu
-                    </a>
+                    <Button asChild variant={isBestPrice ? 'success' : 'primary'} className="whitespace-nowrap">
+                      <a href={STORE_URL} target="_blank" rel="noopener noreferrer">
+                        Idź do sklepu
+                      </a>
+                    </Button>
                   </div>
                 </div>
               );
@@ -342,56 +327,61 @@ export default function ProductDetail() {
                     </div>
                   </div>
 
-                  <a
-                    href={STORE_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`flex items-center justify-center w-full px-6 py-3 text-white rounded-lg transition-colors ${
-                      isBestPrice
-                        ? 'bg-green-600 hover:bg-green-700'
-                        : 'bg-blue-500 hover:bg-blue-600'
-                    }`}
-                  >
-                    Idź do sklepu
-                  </a>
+                  <Button asChild variant={isBestPrice ? 'success' : 'primary'} fullWidth className="py-3">
+                    <a href={STORE_URL} target="_blank" rel="noopener noreferrer">
+                      Idź do sklepu
+                    </a>
+                  </Button>
                 </div>
               );
             })}
           </div>
-        </div>
+        </ContentCard>
       </div>
 
-      {/* ========== MODAL ALERTU CENOWEGO ========== */}
-      {modalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ backgroundColor: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(3px)' }}
-          onClick={(e) => { if (e.target === e.currentTarget) setModalOpen(false); }}
-        >
-          <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
-            style={{ animation: 'modalIn 0.2s ease-out' }}
-          >
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-yellow-100 rounded-full flex items-center justify-center">
-                  <Bell className="w-5 h-5 text-yellow-600" />
-                </div>
-                <div>
-                  <div className="text-gray-900">Alert cenowy</div>
-                  <div className="text-xs text-gray-500">Nissan Skyline GT-R · #42210</div>
-                </div>
-              </div>
-              <button
-                onClick={() => setModalOpen(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="px-6 py-5 space-y-5">
+      <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Alert cenowy"
+        subtitle={`${product.name} · #${product.number}`}
+        icon={
+          <div className="w-9 h-9 bg-yellow-100 rounded-full flex items-center justify-center">
+            <Bell className="w-5 h-5 text-yellow-600" />
+          </div>
+        }
+        footer={
+          <div className="flex gap-3 w-full">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 py-3 rounded-xl"
+              onClick={() => setModalOpen(false)}
+            >
+              Anuluj
+            </Button>
+            <Button
+              type="button"
+              variant={saved ? 'success' : 'warning'}
+              className="flex-1 py-3 rounded-xl"
+              onClick={handleSave}
+              disabled={!saved && (thresholdNum <= 0 || thresholdNum >= CURRENT_PRICE)}
+            >
+              {saved ? (
+                <>
+                  <Check className="w-5 h-5" />
+                  Zapisano!
+                </>
+              ) : (
+                <>
+                  <Bell className="w-5 h-5" />
+                  Zapisz alert
+                </>
+              )}
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-5">
               {/* Aktualna cena */}
               <div className="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3">
                 <span className="text-sm text-gray-500">Aktualna cena</span>
@@ -437,20 +427,16 @@ export default function ProductDetail() {
                 <div className="text-xs text-gray-500 mb-2">Szybkie presety</div>
                 <div className="flex gap-2 flex-wrap">
                   {[5, 10, 15, 20].map((pct) => (
-                    <button
-                      key={pct}
-                      onClick={() => applyPreset(pct)}
-                      className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg hover:border-yellow-400 hover:bg-yellow-50 hover:text-yellow-700 transition-colors text-gray-700"
-                    >
+                    <Button key={pct} variant="chip" onClick={() => applyPreset(pct)}>
                       -{pct}%
-                    </button>
+                    </Button>
                   ))}
-                  <button
-                    onClick={() => setThreshold(String(Math.min(...priceHistory.map(p => p.price))))}
-                    className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 transition-colors text-gray-700"
+                  <Button
+                    variant="chip"
+                    onClick={() => setThreshold(String(Math.min(...priceHistory.map((p) => p.price))))}
                   >
                     Min. historyczna
-                  </button>
+                  </Button>
                 </div>
               </div>
 
@@ -465,59 +451,14 @@ export default function ProductDetail() {
                     <div className="text-xs text-gray-500">Wyślemy wiadomość gdy cena spadnie</div>
                   </div>
                 </div>
-                <button
-                  onClick={() => setEmailAlert(!emailAlert)}
-                  className={`relative w-11 h-6 rounded-full transition-colors ${emailAlert ? 'bg-blue-500' : 'bg-gray-300'}`}
-                >
-                  <span
-                    className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${emailAlert ? 'translate-x-5' : 'translate-x-0'}`}
-                  />
-                </button>
+                <ToggleSwitch
+                  checked={emailAlert}
+                  onCheckedChange={setEmailAlert}
+                  color="blue"
+                />
               </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="px-6 pb-5 flex gap-3">
-              <button
-                onClick={() => setModalOpen(false)}
-                className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                Anuluj
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={thresholdNum <= 0 || thresholdNum >= CURRENT_PRICE}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-white transition-all ${
-                  saved
-                    ? 'bg-green-500'
-                    : thresholdNum > 0 && thresholdNum < CURRENT_PRICE
-                    ? 'bg-yellow-500 hover:bg-yellow-600'
-                    : 'bg-gray-300 cursor-not-allowed'
-                }`}
-              >
-                {saved ? (
-                  <>
-                    <Check className="w-5 h-5" />
-                    Zapisano!
-                  </>
-                ) : (
-                  <>
-                    <Bell className="w-5 h-5" />
-                    Zapisz alert
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
         </div>
-      )}
-
-      <style>{`
-        @keyframes modalIn {
-          from { opacity: 0; transform: scale(0.95) translateY(8px); }
-          to   { opacity: 1; transform: scale(1)    translateY(0); }
-        }
-      `}</style>
-    </div>
+      </Modal>
+    </PageLayout>
   );
 }

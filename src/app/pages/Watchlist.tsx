@@ -1,9 +1,16 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
-import { ChevronLeft, Bell, TrendingDown, TrendingUp, Minus, ExternalLink, Trash2, Pencil } from 'lucide-react';
-import * as Switch from '@radix-ui/react-switch';
-import { Checkbox } from './ui/checkbox';
+import { Bell, TrendingDown, TrendingUp, Minus, ExternalLink, Trash2, Pencil } from 'lucide-react';
+import { BackLink } from '../components/BackLink';
+import { Button } from '../components/Button';
+import { ContentCard } from '../components/ContentCard';
+import { PageHeader } from '../components/PageHeader';
+import { PageLayout } from '../components/PageLayout';
+import { StatCard } from '../components/StatCard';
+import { ToggleSwitch } from '../components/ToggleSwitch';
+import { Checkbox } from '../components/ui/checkbox';
+import { cardClass, pageContainer } from '../styles/tokens';
 import { getMockProductById } from '@/app/data/mockProducts';
 import { getMockImage } from '@/app/data/getMockImage';
 
@@ -131,79 +138,64 @@ export default function Watchlist() {
   const autoBuyCount = watchedSets.filter((set) => set.autoBuy).length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <Link
-            to="/"
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4"
-          >
-            <ChevronLeft className="w-5 h-5" />
-            Powrót
-          </Link>
-          <h1 className="text-3xl text-gray-900">Moja Lista życzeń</h1>
-          <p className="text-gray-600 mt-2">Obserwowane zestawy i alerty cenowe</p>
-        </div>
-      </div>
+    <PageLayout bare>
+      <PageHeader>
+        <BackLink className="mb-4" />
+        <h1 className="text-3xl text-gray-900">Moja Lista życzeń</h1>
+        <p className="text-gray-600 mt-2">Obserwowane zestawy i alerty cenowe</p>
+      </PageHeader>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className={`${pageContainer} py-8`}>
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <div className="text-sm text-gray-500 mb-2">Na liście życzeń</div>
-            <div className="text-3xl text-gray-900">{watchedSets.length}</div>
-          </div>
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <div className="text-sm text-gray-500 mb-2">Aktywne alerty</div>
-            <div className="text-3xl text-blue-600">{activeAlertsCount}</div>
-          </div>
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <div className="text-sm text-gray-500 mb-2">Autozakup włączony</div>
-            <div className="text-3xl text-green-600">{autoBuyCount}</div>
-          </div>
+          <StatCard label="Na liście życzeń" value={watchedSets.length} />
+          <StatCard
+            label="Aktywne alerty"
+            value={activeAlertsCount}
+            valueClassName="text-blue-600"
+          />
+          <StatCard
+            label="Autozakup włączony"
+            value={autoBuyCount}
+            valueClassName="text-green-600"
+          />
         </div>
 
         {watchedSets.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+          <ContentCard className="p-12 text-center">
             <p className="text-gray-600 mb-4">Twoja lista życzeń jest pusta.</p>
-            <Link
-              to="/search"
-              className="inline-flex items-center px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-            >
-              Przeglądaj zestawy
-            </Link>
-          </div>
+            <Button asChild variant="primary" size="lg">
+              <Link to="/search">Przeglądaj zestawy</Link>
+            </Button>
+          </ContentCard>
         ) : (
           <>
         <div className="flex justify-end gap-2 mb-4">
           {isEditing && (
-            <button
+            <Button
               type="button"
+              variant="danger"
+              size="sm"
               onClick={handleDeleteSelected}
               disabled={selectedIds.length === 0}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-sm bg-red-500 text-white hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-red-500"
             >
               <Trash2 className="w-4 h-4" />
               Usuń{selectedIds.length > 0 ? ` (${selectedIds.length})` : ''}
-            </button>
+            </Button>
           )}
-          <button
+          <Button
             type="button"
+            variant={isEditing ? 'dark' : 'outline'}
+            size="sm"
             onClick={toggleEditing}
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-sm ${
-              isEditing
-                ? 'bg-gray-900 text-white hover:bg-gray-800'
-                : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
-            }`}
           >
             <Pencil className="w-4 h-4" />
             {isEditing ? 'Gotowe' : 'Edytuj listę'}
-          </button>
+          </Button>
         </div>
 
         {/* Watched Sets List - Desktop Table */}
-        <div className="hidden md:block bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className={`hidden md:block ${cardClass} overflow-hidden`}>
           <div className="overflow-x-auto">
             <table className="w-full table-fixed">
               <colgroup>
@@ -310,19 +302,11 @@ export default function Watchlist() {
                     </td>
                     <td className="px-4 py-4 align-middle">
                       <div className="flex items-center gap-2">
-                        <Switch.Root
+                        <ToggleSwitch
                           checked={set.autoBuy}
                           onCheckedChange={(checked) => toggleAutoBuy(set.id, checked)}
-                          className={`relative w-11 h-6 shrink-0 rounded-full transition-colors cursor-pointer ${
-                            set.autoBuy ? 'bg-green-500' : 'bg-gray-300'
-                          }`}
-                        >
-                          <Switch.Thumb
-                            className={`block w-5 h-5 bg-white rounded-full transition-transform ${
-                              set.autoBuy ? 'translate-x-5' : 'translate-x-1'
-                            }`}
-                          />
-                        </Switch.Root>
+                          color="green"
+                        />
                         <span className={`text-xs w-14 ${set.autoBuy ? 'text-green-600' : 'invisible'}`}>
                           Włączony
                         </span>
@@ -415,19 +399,11 @@ export default function Watchlist() {
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Autozakup</span>
                   <div className="flex items-center gap-2">
-                    <Switch.Root
+                    <ToggleSwitch
                       checked={set.autoBuy}
                       onCheckedChange={(checked) => toggleAutoBuy(set.id, checked)}
-                      className={`relative w-11 h-6 rounded-full transition-colors cursor-pointer ${
-                        set.autoBuy ? 'bg-green-500' : 'bg-gray-300'
-                      }`}
-                    >
-                      <Switch.Thumb
-                        className={`block w-5 h-5 bg-white rounded-full transition-transform ${
-                          set.autoBuy ? 'translate-x-5' : 'translate-x-1'
-                        }`}
-                      />
-                    </Switch.Root>
+                      color="green"
+                    />
                     {set.autoBuy && (
                       <span className="text-xs text-green-600">Włączony</span>
                     )}
@@ -435,13 +411,12 @@ export default function Watchlist() {
                 </div>
               </div>
 
-              <Link
-                to={`/product/${set.id}#store-offers`}
-                className="w-full mt-4 px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
-              >
-                <ExternalLink className="w-4 h-4" />
-                <span>Zobacz ofertę — {set.bestStoreLogo} {set.bestStore}</span>
-              </Link>
+              <Button asChild variant="primary" fullWidth className="mt-4 py-2.5">
+                <Link to={`/product/${set.id}#store-offers`}>
+                  <ExternalLink className="w-4 h-4" />
+                  <span>Zobacz ofertę — {set.bestStoreLogo} {set.bestStore}</span>
+                </Link>
+              </Button>
             </div>
           ))}
         </div>
@@ -462,6 +437,6 @@ export default function Watchlist() {
           </div>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 }

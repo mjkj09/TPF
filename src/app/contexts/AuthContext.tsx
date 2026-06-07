@@ -25,6 +25,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  loading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   register: (email: string, password: string, name: string) => Promise<boolean>;
   logout: () => Promise<void>;
@@ -35,6 +36,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const mapFirebaseUser = (firebaseUser: FirebaseUser): User => ({
     id: firebaseUser.uid,
@@ -45,11 +47,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!firebaseAuth) {
+      setLoading(false);
       return;
     }
 
     const unsubscribe = onAuthStateChanged(firebaseAuth, (firebaseUser) => {
       setUser(firebaseUser ? mapFirebaseUser(firebaseUser) : null);
+      setLoading(false);
     });
 
     return unsubscribe;
@@ -112,12 +116,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       user,
+      loading,
       login,
       register,
       logout,
       isAuthenticated: !!user,
     }),
-    [user]
+    [user, loading]
   );
 
   return (

@@ -1,7 +1,12 @@
 import { useMemo, useState } from 'react';
 import { User, Mail, Bell, Shield, CreditCard, MapPin, Save, CalendarDays, Sparkles } from 'lucide-react';
-import * as Switch from '@radix-ui/react-switch';
-import * as Tabs from '@radix-ui/react-tabs';
+import { Button } from '../components/Button';
+import { ContentCard } from '../components/ContentCard';
+import { PageLayout } from '../components/PageLayout';
+import { Tabs } from '../components/Tabs';
+import { ToggleSwitch } from '../components/ToggleSwitch';
+import { FormField, inputClassName } from '../components/FormField';
+import { cardClass, tabTriggerClass } from '../styles/tokens';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -10,7 +15,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from './ui/dialog';
+} from '../components/ui/dialog';
 import { useAuth } from '../contexts/AuthContext';
 
 type PaymentMethod = {
@@ -164,46 +169,31 @@ export default function Profile() {
   const lastName = nameParts.slice(1).join(' ');
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-5xl mx-auto px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl text-gray-900 mb-2">Moje konto</h1>
-          <p className="text-gray-600">Zarządzaj swoim profilem i preferencjami</p>
-        </div>
+    <PageLayout narrow>
+      <div className="mb-8">
+        <h1 className="text-3xl text-gray-900 mb-2">Moje konto</h1>
+        <p className="text-gray-600">Zarządzaj swoim profilem i preferencjami</p>
+      </div>
 
-        <Tabs.Root defaultValue="profile" className="space-y-6">
-          {/* Tabs Navigation */}
-          <Tabs.List className="bg-white rounded-lg p-1 shadow-sm border inline-flex gap-1">
-            <Tabs.Trigger
-              value="profile"
-              className="px-6 py-2 rounded-md text-sm text-gray-700 data-[state=active]:bg-blue-500 data-[state=active]:text-white transition-colors"
-            >
-              Profil
-            </Tabs.Trigger>
-            <Tabs.Trigger
-              value="notifications"
-              className="px-6 py-2 rounded-md text-sm text-gray-700 data-[state=active]:bg-blue-500 data-[state=active]:text-white transition-colors"
-            >
-              Powiadomienia
-            </Tabs.Trigger>
-            <Tabs.Trigger
-              value="security"
-              className="px-6 py-2 rounded-md text-sm text-gray-700 data-[state=active]:bg-blue-500 data-[state=active]:text-white transition-colors"
-            >
-              Bezpieczeństwo
-            </Tabs.Trigger>
-            <Tabs.Trigger
-              value="billing"
-              className="px-6 py-2 rounded-md text-sm text-gray-700 data-[state=active]:bg-blue-500 data-[state=active]:text-white transition-colors"
-            >
-              Płatności
-            </Tabs.Trigger>
-          </Tabs.List>
+      <Tabs.Root defaultValue="profile" className="space-y-6">
+        <Tabs.List className={`${cardClass} p-1 inline-flex gap-1`}>
+          <Tabs.Trigger value="profile" className={tabTriggerClass}>
+            Profil
+          </Tabs.Trigger>
+          <Tabs.Trigger value="notifications" className={tabTriggerClass}>
+            Powiadomienia
+          </Tabs.Trigger>
+          <Tabs.Trigger value="security" className={tabTriggerClass}>
+            Bezpieczeństwo
+          </Tabs.Trigger>
+          <Tabs.Trigger value="billing" className={tabTriggerClass}>
+            Płatności
+          </Tabs.Trigger>
+        </Tabs.List>
 
           {/* Profile Tab */}
           <Tabs.Content value="profile">
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <ContentCard>
               <h2 className="text-xl text-gray-900 mb-6">Informacje osobiste</h2>
 
               <div className="space-y-6">
@@ -215,9 +205,9 @@ export default function Profile() {
                   <div>
                     <h3 className="text-gray-900 mb-1">{displayName}</h3>
                     <p className="text-sm text-gray-500 mb-3">{signedUpLabel}</p>
-                    <button className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm transition-colors">
+                    <Button variant="secondary" size="sm">
                       Zmień zdjęcie
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
@@ -232,7 +222,7 @@ export default function Profile() {
                       type="text"
                       value={firstName}
                       readOnly
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500"
+                      className={inputClassName}
                     />
                   </div>
 
@@ -245,7 +235,7 @@ export default function Profile() {
                       type="text"
                       value={lastName}
                       readOnly
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500"
+                      className={inputClassName}
                     />
                   </div>
 
@@ -258,7 +248,7 @@ export default function Profile() {
                       type="email"
                       value={displayEmail}
                       readOnly
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500"
+                      className={inputClassName}
                     />
                   </div>
 
@@ -267,7 +257,7 @@ export default function Profile() {
                     <input
                       type="tel"
                       defaultValue="+48 123 456 789"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500"
+                      className={inputClassName}
                     />
                   </div>
 
@@ -279,24 +269,24 @@ export default function Profile() {
                     <input
                       type="text"
                       defaultValue="ul. Przykładowa 123, 00-001 Warszawa"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500"
+                      className={inputClassName}
                     />
                   </div>
                 </div>
 
                 <div className="flex justify-end pt-4">
-                  <button className="flex items-center gap-2 px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors">
+                  <Button>
                     <Save className="w-4 h-4" />
                     Zapisz zmiany
-                  </button>
+                  </Button>
                 </div>
               </div>
-            </div>
+            </ContentCard>
           </Tabs.Content>
 
           {/* Notifications Tab */}
           <Tabs.Content value="notifications">
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <ContentCard>
               <h2 className="text-xl text-gray-900 mb-2">Preferencje powiadomień</h2>
               <p className="text-sm text-gray-600 mb-6">Wybierz, jak chcesz otrzymywać powiadomienia</p>
 
@@ -310,19 +300,10 @@ export default function Profile() {
                     </div>
                     <p className="text-sm text-gray-600">Otrzymuj powiadomienia na swoją skrzynkę email</p>
                   </div>
-                  <Switch.Root
+                  <ToggleSwitch
                     checked={emailNotifications}
                     onCheckedChange={setEmailNotifications}
-                    className={`relative w-11 h-6 rounded-full transition-colors cursor-pointer ${
-                      emailNotifications ? 'bg-blue-500' : 'bg-gray-300'
-                    }`}
-                  >
-                    <Switch.Thumb
-                      className={`block w-5 h-5 bg-white rounded-full transition-transform ${
-                        emailNotifications ? 'translate-x-5' : 'translate-x-1'
-                      }`}
-                    />
-                  </Switch.Root>
+                  />
                 </div>
 
                 <div
@@ -344,20 +325,11 @@ export default function Profile() {
                         Powiadomienia gdy cena spadnie poniżej progu
                       </p>
                     </div>
-                    <Switch.Root
+                    <ToggleSwitch
                       checked={priceAlerts}
                       onCheckedChange={setPriceAlerts}
                       disabled={!emailNotifications}
-                      className={`relative w-11 h-6 rounded-full transition-colors ${
-                        emailNotifications ? 'cursor-pointer' : 'cursor-not-allowed'
-                      } ${priceAlerts && emailNotifications ? 'bg-blue-500' : 'bg-gray-300'}`}
-                    >
-                      <Switch.Thumb
-                        className={`block w-5 h-5 bg-white rounded-full transition-transform ${
-                          priceAlerts ? 'translate-x-5' : 'translate-x-1'
-                        }`}
-                      />
-                    </Switch.Root>
+                    />
                   </div>
 
                   {/* Weekly Digest */}
@@ -375,20 +347,11 @@ export default function Profile() {
                         Otrzymuj zestawienie najlepszych ofert co tydzień
                       </p>
                     </div>
-                    <Switch.Root
+                    <ToggleSwitch
                       checked={weeklyDigest}
                       onCheckedChange={setWeeklyDigest}
                       disabled={!emailNotifications}
-                      className={`relative w-11 h-6 rounded-full transition-colors ${
-                        emailNotifications ? 'cursor-pointer' : 'cursor-not-allowed'
-                      } ${weeklyDigest && emailNotifications ? 'bg-blue-500' : 'bg-gray-300'}`}
-                    >
-                      <Switch.Thumb
-                        className={`block w-5 h-5 bg-white rounded-full transition-transform ${
-                          weeklyDigest ? 'translate-x-5' : 'translate-x-1'
-                        }`}
-                      />
-                    </Switch.Root>
+                    />
                   </div>
 
                   {/* New Arrivals */}
@@ -406,40 +369,27 @@ export default function Profile() {
                         Powiadomienia o nowych zestawach LEGO
                       </p>
                     </div>
-                    <Switch.Root
+                    <ToggleSwitch
                       checked={newArrivals}
                       onCheckedChange={setNewArrivals}
                       disabled={!emailNotifications}
-                      className={`relative w-11 h-6 rounded-full transition-colors ${
-                        emailNotifications ? 'cursor-pointer' : 'cursor-not-allowed'
-                      } ${newArrivals && emailNotifications ? 'bg-blue-500' : 'bg-gray-300'}`}
-                    >
-                      <Switch.Thumb
-                        className={`block w-5 h-5 bg-white rounded-full transition-transform ${
-                          newArrivals ? 'translate-x-5' : 'translate-x-1'
-                        }`}
-                      />
-                    </Switch.Root>
+                    />
                   </div>
                 </div>
               </div>
 
               <div className="flex justify-end pt-6">
-                <button
-                  type="button"
-                  onClick={() => toast.success('Zapisano')}
-                  className="flex items-center gap-2 px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-                >
+                <Button type="button" onClick={() => toast.success('Zapisano')}>
                   <Save className="w-4 h-4" />
                   Zapisz preferencje
-                </button>
+                </Button>
               </div>
-            </div>
+            </ContentCard>
           </Tabs.Content>
 
           {/* Security Tab */}
           <Tabs.Content value="security">
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <ContentCard>
               <h2 className="text-xl text-gray-900 mb-6">Bezpieczeństwo konta</h2>
 
               <div className="space-y-6">
@@ -455,21 +405,21 @@ export default function Profile() {
                       <label className="block text-sm text-gray-700 mb-2">Obecne hasło</label>
                       <input
                         type="password"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500"
+                        className={inputClassName}
                       />
                     </div>
                     <div>
                       <label className="block text-sm text-gray-700 mb-2">Nowe hasło</label>
                       <input
                         type="password"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500"
+                        className={inputClassName}
                       />
                     </div>
                     <div>
                       <label className="block text-sm text-gray-700 mb-2">Potwierdź nowe hasło</label>
                       <input
                         type="password"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500"
+                        className={inputClassName}
                       />
                     </div>
                   </div>
@@ -483,7 +433,7 @@ export default function Profile() {
                       Dodaj dodatkową warstwę zabezpieczeń do swojego konta
                     </p>
                   </div>
-                  <Switch.Root
+                  <ToggleSwitch
                     checked={twoFactorEnabled}
                     onCheckedChange={(checked) => {
                       setTwoFactorEnabled(checked);
@@ -491,35 +441,22 @@ export default function Profile() {
                         toast.success('Aktywowano 2FA');
                       }
                     }}
-                    className={`relative w-11 h-6 rounded-full transition-colors cursor-pointer ${
-                      twoFactorEnabled ? 'bg-blue-500' : 'bg-gray-300'
-                    }`}
-                  >
-                    <Switch.Thumb
-                      className={`block w-5 h-5 bg-white rounded-full transition-transform ${
-                        twoFactorEnabled ? 'translate-x-5' : 'translate-x-1'
-                      }`}
-                    />
-                  </Switch.Root>
+                  />
                 </div>
 
                 <div className="flex justify-end pt-4">
-                  <button
-                    type="button"
-                    onClick={() => toast.success('Zaktualizowano')}
-                    className="flex items-center gap-2 px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-                  >
+                  <Button type="button" onClick={() => toast.success('Zaktualizowano')}>
                     <Save className="w-4 h-4" />
                     Zaktualizuj hasło
-                  </button>
+                  </Button>
                 </div>
               </div>
-            </div>
+            </ContentCard>
           </Tabs.Content>
 
           {/* Billing Tab */}
           <Tabs.Content value="billing">
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <ContentCard>
               <h2 className="text-xl text-gray-900 mb-6">Metody płatności</h2>
 
               <div className="space-y-4 mb-6">
@@ -543,16 +480,21 @@ export default function Profile() {
                           Domyślna
                         </span>
                       ) : (
-                        <button
+                        <Button
                           type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-8 rounded-full text-xs text-gray-400 hover:text-gray-700"
                           onClick={() => handleSetDefaultPaymentMethod(method.id)}
-                          className="inline-flex h-8 items-center px-3 text-xs text-gray-400 border border-gray-200 hover:text-gray-700 hover:bg-gray-50 rounded-full transition-colors"
                         >
                           Ustaw jako domyślną
-                        </button>
+                        </Button>
                       )}
-                      <button
+                      <Button
                         type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-600 hover:bg-red-50"
                         onClick={() => {
                           setPaymentMethods((current) => {
                             const filtered = current.filter((item) => item.id !== method.id);
@@ -569,22 +511,17 @@ export default function Profile() {
                           });
                           toast.success('Metoda płatności została usunięta');
                         }}
-                        className="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       >
                         Usuń
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <button
-                type="button"
-                onClick={() => setAddPaymentOpen(true)}
-                className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-              >
+              <Button type="button" onClick={() => setAddPaymentOpen(true)}>
                 Dodaj metodę płatności
-              </button>
+              </Button>
 
               <Dialog open={addPaymentOpen} onOpenChange={handleAddPaymentOpenChange}>
                 <DialogContent className="sm:max-w-md bg-white text-gray-900">
@@ -606,7 +543,7 @@ export default function Profile() {
                         value={cardholderName}
                         onChange={(event) => setCardholderName(event.target.value)}
                         placeholder="Jan Kowalski"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500"
+                        className={inputClassName}
                       />
                     </div>
 
@@ -622,7 +559,7 @@ export default function Profile() {
                         value={cardNumber}
                         onChange={(event) => setCardNumber(formatCardNumber(event.target.value))}
                         placeholder="1234 5678 9012 3456"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500"
+                        className={inputClassName}
                       />
                     </div>
 
@@ -639,7 +576,7 @@ export default function Profile() {
                           value={expiry}
                           onChange={(event) => setExpiry(formatExpiry(event.target.value))}
                           placeholder="MM/RR"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500"
+                          className={inputClassName}
                         />
                       </div>
                       <div>
@@ -654,7 +591,7 @@ export default function Profile() {
                           value={cvv}
                           onChange={(event) => setCvv(event.target.value.replace(/\D/g, '').slice(0, 4))}
                           placeholder="123"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500"
+                          className={inputClassName}
                         />
                       </div>
                     </div>
@@ -670,19 +607,14 @@ export default function Profile() {
                     </label>
 
                     <DialogFooter className="gap-2 sm:gap-0">
-                      <button
+                      <Button
                         type="button"
+                        variant="secondary"
                         onClick={() => handleAddPaymentOpenChange(false)}
-                        className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
                       >
                         Anuluj
-                      </button>
-                      <button
-                        type="submit"
-                        className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-                      >
-                        Zapisz kartę
-                      </button>
+                      </Button>
+                      <Button type="submit">Zapisz kartę</Button>
                     </DialogFooter>
                   </form>
                 </DialogContent>
@@ -711,10 +643,9 @@ export default function Profile() {
                   ))}
                 </div>
               </div>
-            </div>
+            </ContentCard>
           </Tabs.Content>
-        </Tabs.Root>
-      </div>
-    </div>
+      </Tabs.Root>
+    </PageLayout>
   );
 }
