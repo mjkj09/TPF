@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router';
+import { Toaster } from 'sonner';
 import Header from './components/Header';
 import { AuthProvider } from './contexts/AuthContext';
 import { initGoogleAnalytics, trackPageView } from './lib/analytics';
@@ -32,6 +33,7 @@ export default function Root() {
       <div className="min-h-screen bg-gray-50">
         <Header currentView={getCurrentView()} />
         <Outlet />
+        <Toaster position="bottom-right" richColors closeButton />
       </div>
     </AuthProvider>
   );

@@ -1,117 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { Search, SlidersHorizontal, X, ChevronDown } from 'lucide-react';
-
-const allProducts = [
-  {
-    id: 1,
-    name: 'Nissan Skyline GT-R',
-    number: '42210',
-    image: 'https://images.unsplash.com/photo-1768029630578-c9e70bccac90?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600&q=80',
-    price: 1499,
-    oldPrice: 1899,
-    series: 'Technic',
-    ageRange: '18+',
-    pieces: 1853,
-    availability: 'Dostępny'
-  },
-  {
-    id: 2,
-    name: 'Millennium Falcon',
-    number: '75192',
-    image: 'https://images.unsplash.com/photo-1616646131606-473894f0fed9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600&q=80',
-    price: 3199,
-    oldPrice: 3999,
-    series: 'Star Wars',
-    ageRange: '16+',
-    pieces: 7541,
-    availability: 'Dostępny'
-  },
-  {
-    id: 3,
-    name: 'Police Station',
-    number: '60316',
-    image: 'https://images.unsplash.com/photo-1759663176274-6d3fa700b87a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600&q=80',
-    price: 649,
-    oldPrice: 899,
-    series: 'City',
-    ageRange: '7+',
-    pieces: 2923,
-    availability: 'Dostępny'
-  },
-  {
-    id: 4,
-    name: 'Taj Mahal',
-    number: '21056',
-    image: 'https://images.unsplash.com/photo-1776212642413-82b859d7ac71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600&q=80',
-    price: 379,
-    oldPrice: 499,
-    series: 'Icons',
-    ageRange: '18+',
-    pieces: 2022,
-    availability: 'Dostępny'
-  },
-  {
-    id: 5,
-    name: 'Porsche 911 RSR',
-    number: '42160',
-    image: 'https://images.unsplash.com/photo-1741745880109-7c1744ca0ac2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600&q=80',
-    price: 1199,
-    oldPrice: 1599,
-    series: 'Technic',
-    ageRange: '18+',
-    pieces: 1580,
-    availability: 'Dostępny'
-  },
-  {
-    id: 6,
-    name: 'AT-AT Walker',
-    number: '75313',
-    image: 'https://images.unsplash.com/photo-1518457032933-2da6b92f088e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600&q=80',
-    price: 2399,
-    oldPrice: 2999,
-    series: 'Star Wars',
-    ageRange: '10+',
-    pieces: 6785,
-    availability: 'Ostatnie sztuki'
-  },
-  {
-    id: 7,
-    name: 'Bugatti Chiron',
-    number: '42083',
-    image: 'https://images.unsplash.com/photo-1621453420564-04315be63900?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600&q=80',
-    price: 2899,
-    oldPrice: 3499,
-    series: 'Technic',
-    ageRange: '16+',
-    pieces: 3599,
-    availability: 'Dostępny'
-  },
-  {
-    id: 8,
-    name: 'Hogwarts Castle',
-    number: '71043',
-    image: 'https://images.unsplash.com/photo-1600120308597-ee63f33c0c0b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600&q=80',
-    price: 3699,
-    oldPrice: 4299,
-    series: 'Harry Potter',
-    ageRange: '16+',
-    pieces: 6020,
-    availability: 'Dostępny'
-  },
-  {
-    id: 9,
-    name: 'Fire Station',
-    number: '60320',
-    image: 'https://images.unsplash.com/photo-1769700016169-a3aff2356663?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600&q=80',
-    price: 899,
-    oldPrice: 1099,
-    series: 'City',
-    ageRange: '6+',
-    pieces: 985,
-    availability: 'Dostępny'
-  }
-];
+import { mockProducts } from '@/app/data/mockProducts';
+import { getMockImage } from '@/app/data/getMockImage';
 
 const seriesOptions = ['Wszystkie', 'Technic', 'Star Wars', 'City', 'Icons', 'Harry Potter', 'Creator', 'Friends'];
 const ageOptions = ['Wszystkie', '4+', '6+', '7+', '10+', '16+', '18+'];
@@ -145,7 +36,7 @@ export default function SearchResults() {
     }
   }, [searchParams]);
 
-  const filteredProducts = allProducts.filter(product => {
+  const filteredProducts = mockProducts.filter(product => {
     const matchesSearch = searchQuery === '' ||
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.number.includes(searchQuery);
@@ -389,9 +280,9 @@ export default function SearchResults() {
                   >
                     <div className="relative">
                       <img
-                        src={product.image}
+                        src={getMockImage(product.image)}
                         alt={product.name}
-                        className="w-full h-48 object-cover"
+                        className="w-full h-48 object-contain bg-gray-50 p-4"
                       />
                       {product.oldPrice > product.price && (
                         <div className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm">
