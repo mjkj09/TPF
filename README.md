@@ -74,6 +74,10 @@ VITE_HOTJAR_SITE_ID=
 
 ### Screeny z Contentsquare
 
+**Weryfikacja instalacji tagu:**
+
+![Contentsquare Installation Successful](docs/contentsquare-verified.png)
+
 **Dashboard — dane sesji:**
 
 ![Contentsquare Dashboard](docs/contentsquare-dashboard.png)
