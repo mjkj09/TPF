@@ -1,34 +1,96 @@
+# LEGO Price Comparison App
 
-  # LEGO Price Comparison App
+Aplikacja do porównywania cen zestawów LEGO w polskich sklepach internetowych. Projekt zaliczeniowy z przedmiotu Techniki Projektowania Frontendowego.
 
-  This is a code bundle for LEGO Price Comparison App. The original project is available at https://www.figma.com/design/IaDOCCrH0NYruNq2zYH3oY/LEGO-Price-Comparison-App.
+**Live demo:** https://tpf-production-bfa9.up.railway.app
 
-  ## Running the code
+## Screeny aplikacji
 
-  Run `npm i` to install the dependencies.
+![App deployed](docs/app-deployed.png)
 
-  Run `npm run dev` to start the development server.
+## Uruchomienie lokalne
 
-  ## Firebase Auth setup
+```bash
+npm install
+npm run dev
+```
 
-  Create a `.env` file in the project root with these values from your Firebase web app configuration:
+## Konfiguracja zmiennych środowiskowych
 
-  - `VITE_FIREBASE_API_KEY`
-  - `VITE_FIREBASE_AUTH_DOMAIN`
-  - `VITE_FIREBASE_PROJECT_ID`
-  - `VITE_FIREBASE_STORAGE_BUCKET`
-  - `VITE_FIREBASE_MESSAGING_SENDER_ID`
-  - `VITE_FIREBASE_APP_ID`
+Utwórz plik `.env` na podstawie `.env.example`:
 
-  Also enable Email/Password sign-in in the Firebase Console under Authentication.
+```
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+VITE_GA_MEASUREMENT_ID=
+VITE_HOTJAR_SITE_ID=
+```
 
-  ## Google Analytics setup
+## Firebase Authentication
 
-  Add your GA4 measurement ID to `.env` as `VITE_GA_MEASUREMENT_ID`.
+1. Utwórz projekt w [Firebase Console](https://console.firebase.google.com)
+2. Dodaj aplikację webową do projektu
+3. Włącz metodę logowania Email/Password w Authentication → Sign-in method
+4. Uzupełnij zmienne `VITE_FIREBASE_*` w `.env`
 
-  Example:
+Zaimplementowane funkcje:
+- Rejestracja (email + hasło + imię)
+- Logowanie
+- Wylogowanie
+- Chronione trasy (`/wishlist`, `/profile`) — przekierowanie na `/login` dla niezalogowanych
+- Trasy tylko dla gości (`/login`, `/register`) — przekierowanie na `/` dla zalogowanych
 
-  - `VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX`
+## Google Analytics
 
-  The app will send SPA page views automatically once this value is present.
-  
+Integracja oparta na pakiecie `react-ga4`. Inicjalizacja w `Root.tsx`, śledzenie pageview przy każdej zmianie lokalizacji przez dedykowany komponent `AnalyticsListener`.
+
+Dodaj swoje Measurement ID do `.env`:
+```
+VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+```
+
+### Screeny z Google Analytics
+
+**Realtime — aktywni użytkownicy:**
+
+![Google Analytics Realtime](docs/ga-realtime.png)
+
+**Firebase Analytics Dashboard:**
+
+![Firebase Analytics](docs/firebase-analytics.png)
+
+## Hotjar / Contentsquare
+
+Integracja oparta na pakiecie `@hotjar/browser` oraz bezpośrednim tagu w `index.html`. Zbiera nagrania sesji, heatmapy i dane o zachowaniu użytkowników.
+
+Dodaj Site ID do `.env`:
+```
+VITE_HOTJAR_SITE_ID=
+```
+
+### Screeny z Contentsquare
+
+**Dashboard — dane sesji:**
+
+![Contentsquare Dashboard](docs/contentsquare-dashboard.png)
+
+## Deploy
+
+Aplikacja deployowana na [Railway](https://railway.app) przy użyciu Dockerfile (multi-stage build: Node.js → nginx).
+
+```dockerfile
+# Build stage
+FROM node:20-alpine AS builder
+# ...
+RUN npm run build
+
+# Serve stage
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+```
+
+Przy deployowaniu na Railway ustaw wszystkie zmienne środowiskowe w panelu **Variables** — są wymagane podczas build step (Vite bake'uje je do builda).
