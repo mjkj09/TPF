@@ -5,12 +5,10 @@ import Header from './components/Header';
 import { AnalyticsListener } from './components/AnalyticsListener';
 import { AuthProvider } from './contexts/AuthContext';
 import { initGoogleAnalytics } from './lib/analytics';
-import { initHotjar } from './lib/hotjar';
 
 export default function Root() {
   const location = useLocation();
   const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
-  const hotjarSiteId = import.meta.env.VITE_HOTJAR_SITE_ID;
 
   const getCurrentView = () => {
     if (location.pathname === '/') return 'home';
@@ -26,10 +24,6 @@ export default function Root() {
   useEffect(() => {
     initGoogleAnalytics(measurementId);
   }, [measurementId]);
-
-  useEffect(() => {
-    initHotjar(hotjarSiteId);
-  }, [hotjarSiteId]);
 
   return (
     <AuthProvider>
