@@ -21,8 +21,9 @@ pnpm-debug.log*
 .env.*.local
 !.env.example
 
-# Vite / React / editor files
+# Vite / React / Cursor / editor files
 .vite/
 .DS_Store
 .vscode/
 .idea/
+.cursor/
