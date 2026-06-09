@@ -79,35 +79,35 @@ ilustrujące pełny flow użytkownika.
 Sekcja hero z wyszukiwarką, szybkie filtry po kategoriach (seriach) oraz sekcja „Gorące okazje”
 z kartami produktów (komponent `ProductCard`).
 
-Strona główna - desktop
+![Strona główna - desktop](docs/desktop/homepage.png)
 
 #### Wyniki wyszukiwania i filtry (`/search`)
 
 Lista zestawów z bocznym panelem filtrów (seria, grupa wiekowa, przedział cenowy),
 sortowaniem (popularność, cena rosnąco/malejąco, nazwa) oraz licznikiem wyników.
 
-Wyszukiwarka i wyniki - desktop
+![Wyszukiwarka i wyniki - desktop](docs/desktop/searchpage.png)
 
 #### Szczegóły produktu (`/product/:id`)
 
 Galeria zdjęć, aktualna najniższa cena i rabat, parametry zestawu, **wykres historii cen**
 (Recharts) oraz lista **ofert sklepów** z oznaczeniem najlepszej ceny.
 
-Szczegóły produktu - desktop
+![Szczegóły produktu - desktop](docs/desktop/productpage.png)
 
 #### Modal alertu cenowego
 
 Otwierany z poziomu szczegółów produktu - pozwala ustawić próg cenowy (z gotowymi presetami -5%, -10%, -15%, -20%
 oraz „min. historyczna”), podgląd oszczędności i przełącznik powiadomień e-mail.
 
-Modal alertu cenowego - desktop
+![Modal alertu cenowego - desktop](docs/desktop/pricealert.png)
 
 #### Lista życzeń / obserwowane (`/wishlist`) - *trasa chroniona*
 
 Tabela obserwowanych zestawów z kafelkami podsumowania (liczba pozycji, aktywne alerty, autozakup),
 progami alertów, zmianą ceny, przełącznikiem autozakupu oraz trybem edycji (zaznaczanie i usuwanie pozycji).
 
-Lista życzeń - desktop
+![Lista życzeń - desktop](docs/desktop/wishlistpage.png)
 
 #### Profil - zakładka „Profil” (`/profile`) - *trasa chroniona*
 
@@ -116,58 +116,58 @@ oraz data utworzenia konta), awatar z inicjałami i formularz danych osobowych. 
 są wyprowadzane z `displayName` (podział po spacji) - Firebase nie przechowuje ich jako osobnych pól.
 Telefon i adres to wartości przykładowe (placeholdery), niepochodzące z Firebase.
 
-Profil - desktop
+![Profil - desktop](docs/desktop/profilepage.png)
 
 #### Profil - zakładka „Powiadomienia”
 
 Preferencje powiadomień (e-mail, alerty cenowe, cotygodniowe podsumowanie, nowe premiery)
 z przełącznikami `ToggleSwitch` i zależnościami między opcjami.
 
-Powiadomienia - desktop
+![Powiadomienia - desktop](docs/desktop/notificationspage.png)
 
 #### Profil - zakładka „Bezpieczeństwo”
 
 Zmiana hasła oraz przełącznik uwierzytelniania dwuskładnikowego (2FA).
 
-Bezpieczeństwo - desktop
+![Bezpieczeństwo - desktop](docs/desktop/securitypage.png)
 
 #### Profil - zakładka „Płatności”
 
 Lista metod płatności (z oznaczeniem domyślnej), historia transakcji oraz dialog dodawania karty.
 
-Płatności - desktop
+![Płatności - desktop](docs/desktop/paymentspage.png)
 
 #### Dodawanie metody płatności (dialog)
 
 Formularz dodania karty z walidacją numeru karty, daty ważności i CVV oraz informacją zwrotną (toasty `sonner`).
 
-Dodawanie karty - desktop
+![Dodawanie karty - desktop](docs/desktop/addpaymentmethod.png)
 
 ### 3.2. Widoki mobile (RWD)
 
 #### Logowanie (`/login`)
 
-Logowanie - mobile
+![Logowanie - mobile](docs/mobile/loginpage-mobile.png)
 
 #### Rejestracja (`/register`)
 
-Rejestracja - mobile
+![Rejestracja - mobile](docs/mobile/registerpage-mobile.png)
 
 #### Wyszukiwarka (`/search`)
 
 Na urządzeniach mobilnych panel filtrów zwija się do rozwijanego przycisku z licznikiem aktywnych filtrów.
 
-Wyszukiwarka - mobile
+![Wyszukiwarka - mobile](docs/mobile/searchpage-mobile.png)
 
 #### Szczegóły produktu (`/product/:id`)
 
-Szczegóły produktu - mobile
+![Szczegóły produktu - mobile](docs/mobile/productpage-mobile.png)
 
 #### Lista życzeń (`/wishlist`)
 
 W wersji mobilnej tabela zamienia się na czytelne karty.
 
-Lista życzeń - mobile
+![Lista życzeń - mobile](docs/mobile/wishlistpage-mobile.png)
 
 ---
 
@@ -460,10 +460,10 @@ VITE_HOTJAR_SITE_ID=
 ### Zmienne środowiskowe na produkcji (Railway)
 
 Na produkcji te same zmienne są przekazywane jako **build-time arguments** do Dockera (sekcja `ARG`/`ENV`
-w `Dockerfile`), ponieważ Vite statycznie podmienia odwołania `import.meta.env.VITE_`* na dosłowne
+w `Dockerfile`), ponieważ Vite statycznie podmienia odwołania `import.meta.env.VITE_*` na dosłowne
 wartości w trakcie budowania. Komplet zmiennych ustawia się w panelu Railway (Variables):
 
-Zmienne środowiskowe w panelu Railway
+![Zmienne środowiskowe w panelu Railway](docs/railway.png)
 
 ---
 
@@ -520,7 +520,7 @@ opisane w sekcji [4.3](#43-routing-react-router-7)). Trasy `/wishlist` i `/profi
 
 Poniżej zarejestrowani użytkownicy widoczni w panelu **Firebase Authentication**:
 
-Firebase Authentication - zarejestrowani użytkownicy
+![Firebase Authentication - zarejestrowani użytkownicy](docs/firebase-authentication.png)
 
 ---
 
@@ -571,15 +571,15 @@ export function AnalyticsListener() {
 
 **Raport „W czasie rzeczywistym” (Realtime)** - aktywni użytkownicy w trakcie korzystania z aplikacji:
 
-GA4 - raport Realtime
+![GA4 - raport Realtime](docs/analytics/analytics-realtime.png)
 
 **Pulpit / raporty GA4** - zebrane dane o ruchu w aplikacji:
 
-GA4 - pulpit / raporty
+![GA4 - pulpit / raporty](docs/analytics/analytics-dashboard.png)
 
 **Zdarzenia `page_view`** - potwierdzenie poprawnego śledzenia odsłon przy zmianach tras SPA:
 
-GA4 - zdarzenia page_view
+![GA4 - zdarzenia page_view](docs/analytics/analytics-dashboard-page_view.png)
 
 ---
 
@@ -640,19 +640,19 @@ export function initHotjar(siteId: string | undefined) {
 
 **Tag zweryfikowany / poprawnie zainstalowany:**
 
-Contentsquare - weryfikacja instalacji tagu
+![Contentsquare - weryfikacja instalacji tagu](docs/hotjar/contentsquare-verified.png)
 
 **Pulpit Contentsquare/Hotjar:**
 
-Contentsquare - pulpit
+![Contentsquare - pulpit](docs/hotjar/contentsquare-dashboard.png)
 
 **Widok narzędzia:**
 
-Contentsquare - widok narzędzia
+![Contentsquare - widok narzędzia](docs/hotjar/contentsquare.png)
 
 **Nagrania sesji (Session Replay):**
 
-Contentsquare - nagrania sesji
+![Contentsquare - nagrania sesji](docs/hotjar/contentsquare-sessionreplay.png)
 
 ---
 
